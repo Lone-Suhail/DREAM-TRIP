@@ -310,11 +310,13 @@ export default function PlanMyTrip() {
                 </p>
               </div>
 
-              <Link href={`/book?travelers=${travelers}&budget=${hotelCategory}&message=Plan: ${days} days, ${hotelCategory} hotel, Pickup: ${pickupLocation}, Vehicle: ${vehicleType}. Budget Range Seen: ${formatFullPrice(minCost)}-${formatFullPrice(maxCost)}`}>
-                <button className="w-full bg-[#D97706] hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
-                  Check Exact Price <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
-                </button>
-              </Link>
+             <Link 
+               href={`/book?travelers=${travelers}&date=${startDate}&budget=${minCost}-${maxCost}&message=Custom Plan Request: ${days} Days trip with ${hotelCategory} hotels. Pickup from ${pickupLocation}, using ${vehicleType}.`}
+                  >
+               <button className="w-full bg-[#D97706] hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
+               Check Exact Price <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
+               </button>
+             </Link>
 
             </div>
           </div>
