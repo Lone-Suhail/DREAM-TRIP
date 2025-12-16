@@ -8,20 +8,19 @@ import { Calendar, User, Phone, Users, CheckCircle, ArrowRight, IndianRupee } fr
 function BookingForm() {
   const searchParams = useSearchParams();
   
-  // --- FIX 1: MOBILE DATE BLOCKER (INDIA TIME) -- -
+  // --- FIX 1: MANUAL DATE BUILDER (Local Time) ---
   const [minDate, setMinDate] = useState('');
   useEffect(() => {
     const dt = new Date();
     const year = dt.getFullYear();
     const month = String(dt.getMonth() + 1).padStart(2, '0');
     const day = String(dt.getDate()).padStart(2, '0');
-    setMinDate(`${year}-${month}-${day}`);
+    setMinDate(`${year}-${month}-${day}`); // Always "YYYY-MM-DD"
   }, []);
 
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    // --- FIX 2: CATCH DATE FROM PREVIOUS PAGE ---
     date: searchParams.get('date') || '', 
     guests: searchParams.get('travelers') || '',
     packageName: searchParams.get('package') || '', 
@@ -33,6 +32,19 @@ function BookingForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // --- FIX 2: STRICT DATE GUARD ---
+  // If the mobile phone allows a past date, this function KILLS IT immediately.
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.value;
+    if (selected < minDate) {
+       alert("⚠️ You cannot select a past date. Please choose today or a future date.");
+       setFormData({ ...formData, date: '' }); // Clear the invalid date
+    } else {
+       setFormData({ ...formData, date: selected });
+    }
+  };
+  // -------------------------------
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -43,9 +55,8 @@ function BookingForm() {
     }
 
     // WHATSAPP MESSAGE GENERATION
-    const phoneNumber = "919149726260"; // YOUR NUMBER
+    const phoneNumber = "919149726260"; 
     
-    // Clean up the message format
     const text = `*New Booking Request* 🏔️%0A%0A` +
       `📦 *Package:* ${formData.packageName || "Not Specified"}%0A` +
       `👤 *Name:* ${formData.name}%0A` +
@@ -97,15 +108,18 @@ function BookingForm() {
           <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
              <Calendar size={16} className="text-[#D97706]" /> Travel Date
           </label>
+          
+          {/* THIS INPUT NOW HAS THE GUARD */}
           <input 
             type="date" 
             name="date" 
-            min={minDate} // <--- BLOCKS PAST DATES CORRECTLY
+            min={minDate} 
             value={formData.date}
-            onChange={handleChange}
+            onChange={handleDateChange} // <--- USING STRICT GUARD
             className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
             required 
           />
+
         </div>
         <div>
           <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
