@@ -37,7 +37,7 @@ function BookingForm() {
     }
 
     // WHATSAPP MESSAGE GENERATION
-    const phoneNumber = "919906123456"; // YOUR NUMBER
+    const phoneNumber = "919149726260"; // YOUR NUMBER
     
     const text = `*New Booking Request* 🏔️%0A%0A` +
       `📦 *Package:* ${formData.packageName || "Not Specified"}%0A` +
