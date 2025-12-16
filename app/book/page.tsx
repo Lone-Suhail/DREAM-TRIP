@@ -1,157 +1,224 @@
-import React, { Suspense } from 'react';
-import { Mail, Phone, MapPin, Calendar, Users, CheckCircle } from 'lucide-react';
+'use client';
 
-export default function Book() {
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Calendar, User, Phone, Users, CheckCircle, ArrowRight, IndianRupee } from 'lucide-react';
+
+// We need this wrapper component to handle the Search Params safely
+function BookingForm() {
+  const searchParams = useSearchParams();
+  
+  // Get Today's Date to block past dates
+  const today = new Date().toISOString().split("T")[0];
+
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    date: '',
+    guests: '',
+    // If they came from a link like /book?package=Honeymoon, pre-fill it
+    packageName: searchParams.get('package') || '', 
+    // If they came from a link like /book?budget=Economy, pre-fill it
+    budget: searchParams.get('budget') || '', 
+    message: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // VALIDATION
+    if (!formData.name || !formData.phone || !formData.date) {
+      alert("Please fill in Name, Phone, and Travel Date.");
+      return;
+    }
+
+    // WHATSAPP MESSAGE GENERATION
+    const phoneNumber = "919906123456"; // YOUR NUMBER
+    
+    const text = `*New Booking Request* 🏔️%0A%0A` +
+      `📦 *Package:* ${formData.packageName || "Not Specified"}%0A` +
+      `👤 *Name:* ${formData.name}%0A` +
+      `📞 *Phone:* ${formData.phone}%0A` +
+      `📅 *Date:* ${formData.date}%0A` +
+      `👥 *Guests:* ${formData.guests}%0A` +
+      `💰 *Budget:* ₹${formData.budget}%0A` +
+      `📝 *Note:* ${formData.message}`;
+
+    window.open(`https://wa.me/${phoneNumber}?text=${text}`, '_blank');
+  };
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <BookingForm />
-    </Suspense>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      
+      {/* Package Name (Auto-filled but editable) */}
+      <div>
+        <label className="block text-sm font-bold text-gray-700 mb-2">Package / Trip Name</label>
+        <input 
+          type="text" 
+          name="packageName" 
+          value={formData.packageName}
+          onChange={handleChange}
+          placeholder="e.g. Kashmir Honeymoon Special"
+          className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A] font-medium"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+             <User size={16} className="text-[#D97706]" /> Full Name
+          </label>
+          <input 
+            type="text" 
+            name="name" 
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
+            required 
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+             <Phone size={16} className="text-[#D97706]" /> Phone Number
+          </label>
+          <input 
+            type="tel" 
+            name="phone" 
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="e.g. 9906123456"
+            className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
+            required 
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+             <Calendar size={16} className="text-[#D97706]" /> Travel Date
+          </label>
+          <input 
+            type="date" 
+            name="date" 
+            min={today} // BLOCKS PAST DATES
+            value={formData.date}
+            onChange={handleChange}
+            className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
+            required 
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+             <Users size={16} className="text-[#D97706]" /> Number of Guests
+          </label>
+          <input 
+            type="number" 
+            name="guests" 
+            value={formData.guests}
+            onChange={handleChange}
+            placeholder="e.g. 2"
+            className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
+          />
+        </div>
+      </div>
+
+      {/* MANUAL BUDGET INPUT */}
+      <div>
+        <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+           <IndianRupee size={16} className="text-[#D97706]" /> Your Budget (Total)
+        </label>
+        <input 
+          type="number" 
+          name="budget" 
+          value={formData.budget}
+          onChange={handleChange}
+          placeholder="Enter amount (e.g. 25000)"
+          className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold text-gray-700 mb-2">Special Requests / Notes</label>
+        <textarea 
+          name="message" 
+          rows={3}
+          value={formData.message}
+          onChange={handleChange}
+          className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
+          placeholder="Any dietary needs, hotel preferences, etc."
+        ></textarea>
+      </div>
+
+      <button 
+        type="submit"
+        className="w-full bg-[#1E3A8A] text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-900 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+      >
+        Confirm Booking Request <ArrowRight size={20} />
+      </button>
+
+      <p className="text-center text-xs text-gray-400 mt-4">
+        *No payment required now. We will confirm availability via WhatsApp.
+      </p>
+    </form>
   );
 }
 
-function BookingForm() {
+// MAIN PAGE COMPONENT
+export default function BookPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pt-24 pb-12">
+    <main className="min-h-screen bg-gray-50 pt-28 pb-20 font-sans">
       <div className="container mx-auto px-4 max-w-4xl">
         
+        {/* Header */}
         <div className="text-center mb-12">
-          <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">Start Your Journey</span>
-          <h1 className="text-4xl font-serif font-bold text-[#1E3A8A] mt-2">Plan Your Dream Trip</h1>
-          <p className="text-gray-500 mt-2">Tell us a little about your plans, and we'll craft the perfect itinerary.</p>
+          <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">Reservation</span>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2">Book Your Trip</h1>
+          <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
+            Fill in the details below to start your reservation. Our team will contact you within 15 minutes.
+          </p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-3">
-            
-            {/* Left Side - Contact Info */}
-            <div className="bg-[#1E3A8A] p-10 text-white hidden md:block">
-              <h3 className="text-2xl font-serif font-bold mb-6">Why Book With Us?</h3>
-              <ul className="space-y-6">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="text-[#D97706] shrink-0" />
-                  <span className="text-blue-100 text-sm">Local Kashmiri experts who know every hidden valley.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="text-[#D97706] shrink-0" />
-                  <span className="text-blue-100 text-sm">24/7 on-ground support during your entire trip.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="text-[#D97706] shrink-0" />
-                  <span className="text-blue-100 text-sm">Best price guarantee for 3-star & luxury houseboats.</span>
-                </li>
-              </ul>
-              
-              <div className="mt-12 pt-12 border-t border-blue-800 space-y-4">
-                <div className="flex items-center gap-3 text-blue-200">
-                  <Phone size={18} /> +91 9149726260
-                </div>
-                <div className="flex items-center gap-3 text-blue-200">
-                  <Mail size={18} /> info@dreamtrip.co.in
-                </div>
-                <div className="flex items-center gap-3 text-blue-200">
-                  <MapPin size={18} /> Main Road Beehama, Ganderbal, J&K - 191201
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side - The Form */}
-            <div className="col-span-2 p-8 md:p-12">
-              <form>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">First Name</label>
-                    <input type="text" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none transition-all" placeholder="John" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
-                    <input type="text" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none transition-all" placeholder="Doe" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-                    <input type="email" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none transition-all" placeholder="john@example.com" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
-                    <input type="tel" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none transition-all" placeholder="+91 98765 43210" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Travel Date</label>
-                    <div className="relative">
-                      <Calendar className="absolute top-3.5 left-4 text-gray-400" size={18} />
-                      <input type="date" className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none transition-all" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">No. of Travelers</label>
-                    <div className="relative">
-                      <Users className="absolute top-3.5 left-4 text-gray-400" size={18} />
-                      <select className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none transition-all appearance-none">
-                        <option>2 People</option>
-                        <option>3-4 People</option>
-                        <option>5-8 People</option>
-                        <option>Group (9+)</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* --- BUDGET SECTION (Added Here) --- */}
-                <div className="mb-8">
-                  <label className="block text-sm font-bold text-gray-700 mb-3">Estimated Budget Per Person</label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className="border border-gray-200 rounded-xl p-3 flex items-start gap-3 cursor-pointer hover:border-[#D97706] hover:bg-orange-50 has-[:checked]:border-[#D97706] has-[:checked]:bg-orange-50 transition-all">
-                      <input type="radio" name="budget" value="economy" className="accent-[#D97706] mt-1" />
-                      <div>
-                        <span className="block font-bold text-[#1E3A8A] text-sm">Economy</span>
-                        <span className="text-xs text-gray-500">₹15k - ₹25k</span>
-                      </div>
-                    </label>
-
-                    <label className="border border-gray-200 rounded-xl p-3 flex items-start gap-3 cursor-pointer hover:border-[#D97706] hover:bg-orange-50 has-[:checked]:border-[#D97706] has-[:checked]:bg-orange-50 transition-all">
-                      <input type="radio" name="budget" value="premium" className="accent-[#D97706] mt-1" />
-                      <div>
-                        <span className="block font-bold text-[#1E3A8A] text-sm">Premium</span>
-                        <span className="text-xs text-gray-500">₹25k - ₹45k</span>
-                      </div>
-                    </label>
-
-                    <label className="border border-gray-200 rounded-xl p-3 flex items-start gap-3 cursor-pointer hover:border-[#D97706] hover:bg-orange-50 has-[:checked]:border-[#D97706] has-[:checked]:bg-orange-50 transition-all">
-                      <input type="radio" name="budget" value="luxury" className="accent-[#D97706] mt-1" />
-                      <div>
-                        <span className="block font-bold text-[#1E3A8A] text-sm">Luxury</span>
-                        <span className="text-xs text-gray-500">₹45k+</span>
-                      </div>
-                    </label>
-                    
-                    <label className="border border-gray-200 rounded-xl p-3 flex items-start gap-3 cursor-pointer hover:border-[#D97706] hover:bg-orange-50 has-[:checked]:border-[#D97706] has-[:checked]:bg-orange-50 transition-all">
-                      <input type="radio" name="budget" value="custom" className="accent-[#D97706] mt-1" />
-                      <div>
-                        <span className="block font-bold text-[#1E3A8A] text-sm">Flexible</span>
-                        <span className="text-xs text-gray-500">Custom</span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-                {/* --- END BUDGET SECTION --- */}
-
-                <div className="mb-8">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Anything specific you want to see?</label>
-                  <textarea className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none transition-all h-32 resize-none" placeholder="e.g. We want to stay in a houseboat for 2 nights and visit Sonamarg..."></textarea>
-                </div>
-
-                <button className="w-full bg-[#D97706] hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
-                  Get My Free Quote
-                </button>
-
-              </form>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Side: The Form */}
+          <div className="lg:col-span-2 bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+             <Suspense fallback={<div>Loading form...</div>}>
+                <BookingForm />
+             </Suspense>
           </div>
+
+          {/* Right Side: Trust Badges */}
+          <div className="space-y-6">
+             <div className="bg-[#1E3A8A] text-white rounded-3xl p-8 shadow-lg">
+                <h3 className="text-xl font-bold mb-4 font-serif">Why Book With Us?</h3>
+                <ul className="space-y-4">
+                   <li className="flex items-start gap-3">
+                      <CheckCircle className="shrink-0 text-[#D97706]" />
+                      <span className="text-blue-100 text-sm">No Hidden Charges. What you see is what you pay.</span>
+                   </li>
+                   <li className="flex items-start gap-3">
+                      <CheckCircle className="shrink-0 text-[#D97706]" />
+                      <span className="text-blue-100 text-sm">24/7 On-Ground Support in Srinagar.</span>
+                   </li>
+                   <li className="flex items-start gap-3">
+                      <CheckCircle className="shrink-0 text-[#D97706]" />
+                      <span className="text-blue-100 text-sm">Rated 4.9/5 by 500+ Happy Travelers.</span>
+                   </li>
+                </ul>
+             </div>
+
+             <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 text-center">
+                <p className="text-gray-500 text-sm mb-2">Need Help?</p>
+                <p className="text-2xl font-bold text-[#1E3A8A] mb-4">+91 99061 23456</p>
+                <p className="text-xs text-gray-400">Available on Call & WhatsApp</p>
+             </div>
+          </div>
+
         </div>
       </div>
     </main>
