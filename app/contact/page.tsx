@@ -28,7 +28,7 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-xl font-bold text-[#1E3A8A] mb-2">Talk to an Expert</h3>
                 <p className="text-gray-600 mb-4">Available 24/7 for urgent queries.</p>
-                <a href="tel:+919999999999" className="text-[#D97706] font-bold text-lg hover:underline">+91 99999 XXXXX</a>
+                <a href="tel:+919999999999" className="text-[#D97706] font-bold text-lg hover:underline">+91 9149 726260</a>
             </div>
 
             <div className="bg-orange-50 p-8 rounded-3xl border border-orange-100 text-center hover:shadow-lg transition-all">
@@ -37,7 +37,7 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-xl font-bold text-[#1E3A8A] mb-2">Email Us</h3>
                 <p className="text-gray-600 mb-4">For detailed itineraries and quotes.</p>
-                <a href="mailto:info@dreamtrip.com" className="text-[#D97706] font-bold text-lg hover:underline">bookings@dreamtrip.com</a>
+                <a href="mailto:info@dreamtrip.com" className="text-[#D97706] font-bold text-lg hover:underline">info@dreamtrip.co.in</a>
             </div>
 
             <div className="bg-gray-50 p-8 rounded-3xl border border-gray-200 text-center hover:shadow-lg transition-all">
@@ -45,8 +45,8 @@ export default function ContactPage() {
                     <MapPin size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-[#1E3A8A] mb-2">Visit Our Office</h3>
-                <p className="text-gray-600 mb-4">Boulevard Road, Dal Lake</p>
-                <span className="text-[#D97706] font-bold text-lg">Srinagar, Kashmir</span>
+                <p className="text-gray-600 mb-4">Main Road Beehama</p>
+                <span className="text-[#D97706] font-bold text-lg">Ganderbal, J&K - 191201</span>
             </div>
         </div>
 
