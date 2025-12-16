@@ -12,14 +12,17 @@ export default function PlanMyTrip() {
   const [vehicleType, setVehicleType] = useState<'sedan' | 'suv' | 'tempo'>('sedan');
   const [pickupLocation, setPickupLocation] = useState<'srinagar_air' | 'srinagar_rail' | 'jammu_rail'>('srinagar_air');
   
-  // --- FIX 1: DEFINE START DATE STATE (This fixes your build error) ---
+  // --- DATE STATE ---
   const [startDate, setStartDate] = useState('');
-  
-  // --- FIX 2: MOBILE DATE BLOCKER ---
   const [minDate, setMinDate] = useState('');
+
+  // --- FIX: MOBILE DATE BLOCKER (Manual String Build) ---
   useEffect(() => {
-    // This forces the date to be strictly local (YYYY-MM-DD)
-    setMinDate(new Date().toLocaleDateString('en-CA'));
+    const dt = new Date();
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    setMinDate(`${year}-${month}-${day}`);
   }, []);
 
   // Range State
@@ -30,26 +33,13 @@ export default function PlanMyTrip() {
 
   // --- PRICING ENGINE ---
   useEffect(() => {
-    
-    // 1. HOTEL COST
     const numberOfRooms = Math.ceil(travelers / 2);
     const nights = days - 1;
 
-    const hotelRates = {
-      standard: 2000, 
-      deluxe: 4500,   
-      luxury: 12000   
-    };
-
+    const hotelRates = { standard: 2000, deluxe: 4500, luxury: 12000 };
     const baseHotelCost = numberOfRooms * hotelRates[hotelCategory] * nights;
 
-    // 2. TRANSPORT COST
-    const transportRates = {
-      sedan: 3500,
-      suv: 5000, 
-      tempo: 8000
-    };
-
+    const transportRates = { sedan: 3500, suv: 5000, tempo: 8000 };
     let vehiclesNeeded = 1;
     if (vehicleType === 'sedan' && travelers > 4) vehiclesNeeded = Math.ceil(travelers / 4);
     if (vehicleType === 'suv' && travelers > 7) vehiclesNeeded = Math.ceil(travelers / 7);
@@ -57,34 +47,26 @@ export default function PlanMyTrip() {
 
     const baseTransportCost = (transportRates[vehicleType] * vehiclesNeeded) * days;
 
-    // 3. PICKUP SURCHARGE
     let pickupSurcharge = 0;
     if (pickupLocation === 'jammu_rail') {
       pickupSurcharge = 8000 * vehiclesNeeded; 
     }
 
-    // 4. SERVICE FEES
     const baseBuffer = 1200 * travelers; 
-
-    // CALCULATE BASE TOTAL
     const calculatedTotal = baseHotelCost + baseTransportCost + pickupSurcharge + baseBuffer;
     
-    // --- CREATE THE "SAFE RANGE" ---
     const minTotal = Math.round(calculatedTotal);
-    const maxTotal = Math.round(calculatedTotal * 1.20); // 20% Buffer
+    const maxTotal = Math.round(calculatedTotal * 1.20);
 
     setMinCost(minTotal);
     setMaxCost(maxTotal);
-
     setMinPerPerson(Math.round(minTotal / travelers));
     setMaxPerPerson(Math.round(maxTotal / travelers));
 
   }, [travelers, days, hotelCategory, vehicleType, pickupLocation]);
 
   const formatPrice = (price: number) => {
-    if (price > 1000) {
-      return '₹' + (price / 1000).toFixed(1) + 'k';
-    }
+    if (price > 1000) return '₹' + (price / 1000).toFixed(1) + 'k';
     return '₹' + price;
   };
 
@@ -115,7 +97,6 @@ export default function PlanMyTrip() {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Travelers Slider */}
                 <div>
                   <label className="flex justify-between font-bold text-gray-700 mb-4">
                     <span>Travelers</span>
@@ -133,7 +114,6 @@ export default function PlanMyTrip() {
                   </div>
                 </div>
 
-                {/* Days Slider */}
                 <div>
                   <label className="flex justify-between font-bold text-gray-700 mb-4">
                     <span>Duration</span>
@@ -250,7 +230,6 @@ export default function PlanMyTrip() {
                 </div>
               </div>
               
-               {/* WARNING LOGIC */}
                {((vehicleType === 'sedan' && travelers > 4) || (vehicleType === 'suv' && travelers > 7)) && (
                 <div className="mt-4 p-4 bg-orange-50 text-[#D97706] text-sm rounded-xl flex items-center gap-3 border border-orange-100">
                   <AlertCircle size={20} /> 
@@ -262,7 +241,7 @@ export default function PlanMyTrip() {
               )}
             </div>
 
-            {/* 5. TRAVEL DATE (NEW SECTION) */}
+            {/* 5. TRAVEL DATE */}
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
               <h2 className="text-xl font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
                 <Calendar size={20} className="text-[#D97706]" /> Travel Dates
@@ -281,7 +260,7 @@ export default function PlanMyTrip() {
 
           </div>
 
-          {/* --- RIGHT COLUMN: STICKY PRICE CARD (SAFE RANGE) --- */}
+          {/* --- RIGHT COLUMN: STICKY PRICE CARD --- */}
           <div className="lg:col-span-1">
             <div className="bg-[#1E3A8A] text-white rounded-3xl p-8 shadow-xl sticky top-28">
               <h3 className="text-2xl font-serif font-bold mb-6">Trip Estimate</h3>
@@ -334,13 +313,13 @@ export default function PlanMyTrip() {
                 </p>
               </div>
 
-              <Link 
-                href={`/book?travelers=${travelers}&date=${startDate}&budget=${minCost}-${maxCost}&message=Custom Plan Request: ${days} Days trip with ${hotelCategory} hotels. Pickup from ${pickupLocation}, using ${vehicleType}.`}
-              >
+              {/* --- LINK FIXED: NO PRE-FILLED BUDGET OR MESSAGE --- */}
+              <Link href={`/book?travelers=${travelers}&date=${startDate}`}>
                 <button className="w-full bg-[#D97706] hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
                   Check Exact Price <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
                 </button>
               </Link>
+              {/* --------------------------------------------------- */}
 
             </div>
           </div>

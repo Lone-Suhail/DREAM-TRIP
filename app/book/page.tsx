@@ -8,7 +8,7 @@ import { Calendar, User, Phone, Users, CheckCircle, ArrowRight, IndianRupee } fr
 function BookingForm() {
   const searchParams = useSearchParams();
   
-  // --- FIX 1: MOBILE DATE BLOCKER (INDIA TIME) ---
+  // --- FIX 1: MOBILE DATE BLOCKER (INDIA TIME) -- -
   const [minDate, setMinDate] = useState('');
   useEffect(() => {
     const dt = new Date();
