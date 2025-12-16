@@ -19,9 +19,10 @@ export default function TermsPage() {
 
             <h3 className="text-xl font-bold text-gray-900">2. Cancellation Policy</h3>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Cancellations made 30 days prior: 75% refund.</li>
-              <li>Cancellations made 15-30 days prior: 50% refund.</li>
-              <li>Cancellations made less than 15 days prior: No refund.</li>
+              <li>Cancellations made 30 days prior: 80% refund.</li>
+              <li>Cancellations made 15-29 days prior: 50% refund.</li>
+              <li>Cancellations made 07-14 days prior: 25% refund.</li>
+              <li>Cancellations made less than 07 days prior: No refund.</li>
             </ul>
 
             <h3 className="text-xl font-bold text-gray-900">3. Itinerary Changes</h3>
