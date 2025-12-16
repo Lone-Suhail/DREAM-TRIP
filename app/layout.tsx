@@ -38,18 +38,7 @@ export default function RootLayout({
         <ScrollToTop />
 
         {/* --- FLOATING WHATSAPP BUTTON --- */}
-        <a 
-          href="https://wa.me/919999999999?text=Hi%20Dream%20Trip,%20I%20am%20interested%20in%20a%20Kashmir%20tour." 
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:scale-110 transition-all duration-300 flex items-center justify-center group"
-          title="Chat on WhatsApp"
-        >
-          <MessageCircle size={32} fill="white" className="text-green-500" />
-          <span className="absolute right-full mr-4 bg-white text-gray-800 px-3 py-1 rounded-lg text-sm font-bold shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-            Chat with us
-          </span>
-        </a>
+       <WhatsAppWidget />
 
       </body>
     </html>
