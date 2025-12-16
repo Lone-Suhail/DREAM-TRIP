@@ -29,7 +29,8 @@ const Footer = () => {
                 <FaInstagram size={20} />
               </a>
               {/* Facebook Link */}
-              <a href="https://facebook.com/DREAMTRIP" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
+              <a href="https://www.facebook.com/profile.php?id=61551418647075" target="_blank" rel="noopener noreferrer"
+               className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
                 <FaFacebookF size={20} />
               </a>
               {/* WhatsApp Link */}
@@ -37,7 +38,7 @@ const Footer = () => {
                 href="https://wa.me/919149726260" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300"
                 aria-label="WhatsApp"
               >
                 <FaWhatsapp size={20} />
