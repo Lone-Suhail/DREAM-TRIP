@@ -1,10 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
-// 1. Import the new button
 import ScrollToTop from "@/components/ScrollToTop";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
@@ -19,6 +18,16 @@ const lato = Lato({
   variable: '--font-sans',
 });
 
+// 1. PWA Viewport Settings (Theme Color & Zoom Lock)
+export const viewport: Viewport = {
+  themeColor: "#1E3A8A",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // This makes it feel like a real app (no zooming)
+};
+
+// 2. SEO & Manifest Metadata
 export const metadata: Metadata = {
   metadataBase: new URL('https://dreamtrip.co.in'),
   title: {
@@ -28,6 +37,10 @@ export const metadata: Metadata = {
   description: "Plan your perfect Kashmir holiday with Dream Trip. We offer luxury tour packages, budget stays, houseboat bookings, and reliable taxi services.",
   keywords: ["Kashmir tour packages", "Srinagar taxi service", "Gulmarg hotels", "Kashmir tourism", "Dal Lake houseboat"],
   authors: [{ name: "Dream Trip Kashmir" }],
+  
+  // --- PWA MANIFEST LINKED HERE ---
+  manifest: "/manifest.json", 
+  
   openGraph: {
     title: "Dream Trip Kashmir | Best Travel Agency in Srinagar",
     description: "Book affordable Kashmir tour packages and taxi services. Local experts, 24/7 support.",
@@ -52,7 +65,7 @@ export default function RootLayout({
         
         {/* Floating Widgets */}
         <WhatsAppWidget />
-        <ScrollToTop /> {/* <--- Added Here */}
+        <ScrollToTop />
       </body>
       
       {/* Google Analytics */}
