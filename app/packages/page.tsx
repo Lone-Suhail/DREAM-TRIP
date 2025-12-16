@@ -4,6 +4,14 @@ import React, { useState } from 'react';
 import { Clock, MapPin, Star, CheckCircle, Users, ArrowRight, Filter, Tag, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 
+<div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-8 mx-auto max-w-4xl">
+  <p className="text-orange-700 text-sm">
+    <strong>Note:</strong> Prices indicated are "Starting From" rates and may vary based on 
+    season (Peak/Off-Peak), hotel category, and availability. 
+    Please contact us via WhatsApp for the exact current quotation.
+  </p>
+</div>
+
 // --- 1. DEFINE DATA HERE TO PREVENT ERRORS ---
 const packages = [
   {

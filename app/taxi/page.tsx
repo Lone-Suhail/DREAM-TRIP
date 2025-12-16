@@ -12,7 +12,7 @@ export default function TaxiServices() {
       image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=800&auto=format&fit=crop",
       passengers: "4 Pax",
       luggage: "2 Bags",
-      price: "₹3,500",
+      price: "₹2,000 - 3,000",
       features: ["AC Climate Control", "Bluetooth Music", "Experienced Local Driver", "Clean Interiors"],
       idealFor: "Couples & Small Families"
     },
@@ -23,7 +23,7 @@ export default function TaxiServices() {
       image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=800&auto=format&fit=crop",
       passengers: "6-7 Pax",
       luggage: "4 Bags",
-      price: "₹5,500",
+      price: "₹3,500 - 4,500",
       features: ["Captain Seats", "Double AC", "Hill Assist", "Sunroof (Optional)"],
       idealFor: "Families & Comfort Seekers"
     },
@@ -34,7 +34,7 @@ export default function TaxiServices() {
       image: "https://images.unsplash.com/photo-1566373714488-6c841cb83d65?q=80&w=800&auto=format&fit=crop",
       passengers: "12-16 Pax",
       luggage: "10+ Bags",
-      price: "₹8,500",
+      price: "₹4,500 - 7,000",
       features: ["Push-back Seats", "Ample Leg Room", "Separate Luggage Space", "Group Sound System"],
       idealFor: "Large Groups & Corporate"
     }
