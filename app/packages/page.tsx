@@ -137,6 +137,16 @@ export default function PackagesPage() {
         </p>
       </div>
 
+      {/* --- DISCLAIMER MOVED HERE (INSIDE THE FUNCTION) --- */}
+        <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mx-auto max-w-4xl text-left shadow-sm rounded-r-lg">
+          <p className="text-orange-700 text-sm">
+            <strong>Note:</strong> Prices indicated are "Starting From" rates and may vary based on 
+            season (Peak/Off-Peak), hotel category, and availability. 
+            Please contact us via WhatsApp for the exact current quotation.
+          </p>
+        </div>
+        {/* --------------------------------------------------- */}
+
       {/* --- BUILD YOUR TRIP BANNER --- */}
       <div className="container mx-auto px-4 mb-12">
         <div className="bg-gradient-to-r from-[#1E3A8A] to-blue-900 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-xl text-white">
