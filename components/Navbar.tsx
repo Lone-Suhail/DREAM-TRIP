@@ -2,15 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation'; // This hook checks the current URL
 import { Menu, X, Phone } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname(); // Get the current path (e.g., "/packages")
 
-  // Logic: Navbar is "Sticky" (White background) if we scroll OR if we are NOT on the home page
   const isHome = pathname === "/";
   const isSticky = scrolled || !isHome;
 
@@ -28,7 +27,7 @@ const Navbar = () => {
     { name: 'Destinations', href: '/destinations' },
     { name: 'Taxi Rental', href: '/taxi' },
     { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' }, // <--- Added Contact here
+    { name: 'Contact', href: '/contact' }, // ✅ Contact Added
   ];
 
   return (
@@ -53,26 +52,30 @@ const Navbar = () => {
 
         {/* DESKTOP MENU */}
         <div className="hidden md:flex items-center gap-6 lg:gap-8">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name}
-              href={link.href} 
-              className={`font-medium transition-colors cursor-pointer relative text-sm lg:text-base ${
-                // LOGIC: Active page = ORANGE. Otherwise Blue (sticky) or White (transparent).
-                pathname === link.href 
-                  ? 'text-[#D97706] font-bold' 
-                  : isSticky 
-                    ? 'text-gray-700 hover:text-[#D97706]' 
-                    : 'text-white/90 hover:text-[#D97706]'
-              }`}
-            >
-              {link.name}
-              {/* Little Orange Dot under active link */}
-              {pathname === link.href && (
-                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#D97706] rounded-full"></span>
-              )}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href; // Check if we are on this page
+            
+            return (
+              <Link 
+                key={link.name}
+                href={link.href} 
+                className={`font-medium transition-colors cursor-pointer relative text-sm lg:text-base ${
+                  isActive 
+                    ? 'text-[#D97706] font-bold' // ACTIVE STATE: ORANGE
+                    : isSticky 
+                      ? 'text-gray-700 hover:text-[#D97706]' // INACTIVE (STICKY)
+                      : 'text-white/90 hover:text-[#D97706]' // INACTIVE (TRANSPARENT)
+                }`}
+              >
+                {link.name}
+                
+                {/* Orange Dot Indicator for Active Page */}
+                {isActive && (
+                  <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#D97706] rounded-full"></span>
+                )}
+              </Link>
+            );
+          })}
 
           {/* Call Button */}
           <a href="tel:+919999999999" className={`hidden lg:flex items-center gap-2 font-bold px-4 py-2 rounded-full transition-all text-sm border ${
@@ -105,18 +108,21 @@ const Navbar = () => {
       {/* MOBILE MENU DROPDOWN */}
       {isOpen && (
         <div className="absolute top-full left-0 w-full bg-white shadow-2xl md:hidden flex flex-col items-center gap-6 py-10 animate-fade-in-up border-t border-gray-100 h-screen overflow-y-auto pb-32">
-          {navLinks.map((link) => (
-             <Link 
-               key={link.name}
-               href={link.href} 
-               onClick={() => setIsOpen(false)} 
-               className={`text-xl font-medium cursor-pointer ${
-                 pathname === link.href ? 'text-[#D97706] font-bold' : 'text-gray-800 hover:text-[#D97706]'
-               }`}
-             >
-               {link.name}
-             </Link>
-          ))}
+          {navLinks.map((link) => {
+             const isActive = pathname === link.href;
+             return (
+               <Link 
+                 key={link.name}
+                 href={link.href} 
+                 onClick={() => setIsOpen(false)} 
+                 className={`text-xl font-medium cursor-pointer ${
+                   isActive ? 'text-[#D97706] font-bold' : 'text-gray-800 hover:text-[#D97706]'
+                 }`}
+               >
+                 {link.name}
+               </Link>
+             );
+          })}
           
           <Link href="/plan" onClick={() => setIsOpen(false)} className="w-auto mt-4">
             <div className="bg-[#D97706] text-white px-8 py-3 rounded-full font-bold shadow-lg cursor-pointer text-center">
