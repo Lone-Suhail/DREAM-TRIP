@@ -214,7 +214,7 @@ export default function BookPage() {
 
              <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 text-center">
                 <p className="text-gray-500 text-sm mb-2">Need Help?</p>
-                <p className="text-2xl font-bold text-[#1E3A8A] mb-4">+91 99061 23456</p>
+                <p className="text-2xl font-bold text-[#1E3A8A] mb-4">+91 9149726260</p>
                 <p className="text-xs text-gray-400">Available on Call & WhatsApp</p>
              </div>
           </div>
