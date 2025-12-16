@@ -12,13 +12,23 @@ export default function PlanMyTrip() {
   const [vehicleType, setVehicleType] = useState<'sedan' | 'suv' | 'tempo'>('sedan');
   const [pickupLocation, setPickupLocation] = useState<'srinagar_air' | 'srinagar_rail' | 'jammu_rail'>('srinagar_air');
   
+  // --- FIX 1: DEFINE START DATE STATE (This fixes your build error) ---
+  const [startDate, setStartDate] = useState('');
+  
+  // --- FIX 2: MOBILE DATE BLOCKER ---
+  const [minDate, setMinDate] = useState('');
+  useEffect(() => {
+    // This forces the date to be strictly local (YYYY-MM-DD)
+    setMinDate(new Date().toLocaleDateString('en-CA'));
+  }, []);
+
   // Range State
   const [minCost, setMinCost] = useState(0);
   const [maxCost, setMaxCost] = useState(0);
   const [minPerPerson, setMinPerPerson] = useState(0);
   const [maxPerPerson, setMaxPerPerson] = useState(0);
 
-  // --- PRICING ENGINE (HIDDEN) ---
+  // --- PRICING ENGINE ---
   useEffect(() => {
     
     // 1. HOTEL COST
@@ -60,8 +70,6 @@ export default function PlanMyTrip() {
     const calculatedTotal = baseHotelCost + baseTransportCost + pickupSurcharge + baseBuffer;
     
     // --- CREATE THE "SAFE RANGE" ---
-    // Min price = Calculated Price
-    // Max price = Calculated Price + 20% (For Season/Availability Buffer)
     const minTotal = Math.round(calculatedTotal);
     const maxTotal = Math.round(calculatedTotal * 1.20); // 20% Buffer
 
@@ -74,7 +82,6 @@ export default function PlanMyTrip() {
   }, [travelers, days, hotelCategory, vehicleType, pickupLocation]);
 
   const formatPrice = (price: number) => {
-    // Format to "25k" style to look cleaner, or standard currency
     if (price > 1000) {
       return '₹' + (price / 1000).toFixed(1) + 'k';
     }
@@ -255,6 +262,23 @@ export default function PlanMyTrip() {
               )}
             </div>
 
+            {/* 5. TRAVEL DATE (NEW SECTION) */}
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+              <h2 className="text-xl font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
+                <Calendar size={20} className="text-[#D97706]" /> Travel Dates
+              </h2>
+              <div>
+                <label className="block font-bold text-gray-700 mb-2">When do you want to start?</label>
+                <input 
+                  type="date" 
+                  min={minDate} 
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-[#D97706] outline-none font-bold text-gray-700"
+                />
+              </div>
+            </div>
+
           </div>
 
           {/* --- RIGHT COLUMN: STICKY PRICE CARD (SAFE RANGE) --- */}
@@ -310,13 +334,13 @@ export default function PlanMyTrip() {
                 </p>
               </div>
 
-             <Link 
-               href={`/book?travelers=${travelers}&date=${startDate}&budget=${minCost}-${maxCost}&message=Custom Plan Request: ${days} Days trip with ${hotelCategory} hotels. Pickup from ${pickupLocation}, using ${vehicleType}.`}
-                  >
-               <button className="w-full bg-[#D97706] hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
-               Check Exact Price <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
-               </button>
-             </Link>
+              <Link 
+                href={`/book?travelers=${travelers}&date=${startDate}&budget=${minCost}-${maxCost}&message=Custom Plan Request: ${days} Days trip with ${hotelCategory} hotels. Pickup from ${pickupLocation}, using ${vehicleType}.`}
+              >
+                <button className="w-full bg-[#D97706] hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
+                  Check Exact Price <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
+                </button>
+              </Link>
 
             </div>
           </div>
