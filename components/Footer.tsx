@@ -1,6 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp MapPin, Phone, Mail, Globe } from 'react-icons/fa';
+import { 
+  FaFacebookF, 
+  FaInstagram, 
+  FaTwitter, 
+  FaWhatsapp, 
+  FaMapPin, 
+  FaPhone, 
+  FaEnvelope, // Changed from FaMail (which doesn't exist)
+  FaGlobe 
+} from 'react-icons/fa';
 
 const Footer = () => {
   return (
@@ -15,21 +24,24 @@ const Footer = () => {
               Your trusted partner for exploring the paradise of Kashmir. We craft unforgettable journeys with a touch of local hospitality.
             </p>
             <div className="flex gap-4">
-              <a href="https://facebook.com/DREAMTRIP" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
+              {/* Instagram Link */}
+              <a href="https://instagram.com/dream.trip44" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
                 <FaInstagram size={20} />
               </a>
-              <a href="https://instagram.com/dream.trip44" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
+              {/* Facebook Link */}
+              <a href="https://facebook.com/DREAMTRIP" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
                 <FaFacebookF size={20} />
               </a>
+              {/* WhatsApp Link */}
               <a 
-              href="https://wa.me/9149726260" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300"
-              aria-label="WhatsApp"
-            >
-              <FaWhatsapp />
-            </a>
+                href="https://wa.me/919149726260" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300"
+                aria-label="WhatsApp"
+              >
+                <FaWhatsapp size={20} />
+              </a>
             </div>
           </div>
 
@@ -61,15 +73,15 @@ const Footer = () => {
             <h4 className="text-lg font-bold mb-6 text-[#D97706]">Contact Us</h4>
             <ul className="space-y-4 text-sm text-blue-100">
               <li className="flex items-start gap-3">
-                <MapPin size={20} className="shrink-0 text-[#D97706]" />
-                <span> Main Road Beehama, Ganderbal, J&K - 191201</span>
+                <FaMapPin size={20} className="shrink-0 text-[#D97706]" />
+                <span>Main Road Beehama, Ganderbal, J&K - 191201</span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone size={20} className="shrink-0 text-[#D97706]" />
+                <FaPhone size={20} className="shrink-0 text-[#D97706]" />
                 <span>+91 9149726260</span>
               </li>
               <li className="flex items-center gap-3">
-                <Mail size={20} className="shrink-0 text-[#D97706]" />
+                <FaEnvelope size={20} className="shrink-0 text-[#D97706]" />
                 <span>info@dreamtrip.co.in</span>
               </li>
             </ul>
