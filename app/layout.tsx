@@ -4,7 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
-// 1. IMPORT GOOGLE ANALYTICS
+// 1. Import the new button
+import ScrollToTop from "@/components/ScrollToTop";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 const playfair = Playfair_Display({ 
@@ -18,15 +19,14 @@ const lato = Lato({
   variable: '--font-sans',
 });
 
-// 2. SEO SETTINGS (How you look on Google)
 export const metadata: Metadata = {
   metadataBase: new URL('https://dreamtripkashmir.com'),
   title: {
     default: "Dream Trip Kashmir | Best Travel Agency in Srinagar",
     template: "%s | Dream Trip Kashmir"
   },
-  description: "Plan your perfect Kashmir holiday with Dream Trip. We offer luxury tour packages, budget stays, houseboat bookings, and reliable taxi services in Srinagar, Gulmarg, and Pahalgam.",
-  keywords: ["Kashmir tour packages", "Srinagar taxi service", "Gulmarg hotels", "Kashmir tourism", "Dal Lake houseboat", "Best travel agency Kashmir", "Kashmir honeymoon package"],
+  description: "Plan your perfect Kashmir holiday with Dream Trip. We offer luxury tour packages, budget stays, houseboat bookings, and reliable taxi services.",
+  keywords: ["Kashmir tour packages", "Srinagar taxi service", "Gulmarg hotels", "Kashmir tourism", "Dal Lake houseboat"],
   authors: [{ name: "Dream Trip Kashmir" }],
   openGraph: {
     title: "Dream Trip Kashmir | Best Travel Agency in Srinagar",
@@ -49,10 +49,13 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        
+        {/* Floating Widgets */}
         <WhatsAppWidget />
+        <ScrollToTop /> {/* <--- Added Here */}
       </body>
       
-      {/* 3. PASTE YOUR GOOGLE ID BELOW */}
+      {/* Google Analytics */}
       <GoogleAnalytics gaId="G-96C9WBNPG3" /> 
       
     </html>
