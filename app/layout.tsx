@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop"; // <--- Import here
 import { MessageCircle } from 'lucide-react';
+import WhatsAppWidget from "../components/WhatsAppWidget";
 
 const playfair = Playfair_Display({ 
   subsets: ["latin"],

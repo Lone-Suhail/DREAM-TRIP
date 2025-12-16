@@ -67,7 +67,7 @@ function LocationBookingForm() {
 ---------------------------
 Please suggest best hotels in this category.`;
 
-    const phoneNumber = "919999999999"; // REPLACE WITH YOUR NUMBER
+    const phoneNumber = "+91 9149726260"; // REPLACE WITH YOUR NUMBER
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };

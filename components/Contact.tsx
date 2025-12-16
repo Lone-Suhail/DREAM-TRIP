@@ -25,8 +25,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-300 mb-1">Call Us Anytime</p>
-                  <p className="text-xl font-bold">+91 9906 XX XXXX</p>
-                  <p className="text-xl font-bold">+91 7006 XX XXXX</p>
+                  <p className="text-xl font-bold">+91 9149726260</p>
                 </div>
               </div>
 
@@ -36,7 +35,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-300 mb-1">Email Us</p>
-                  <p className="text-xl font-bold">hello@dreamtrip.com</p>
+                  <p className="text-xl font-bold">info@dreamtrip.co.in</p>
                 </div>
               </div>
 
@@ -47,7 +46,7 @@ const Contact = () => {
                 <div>
                   <p className="text-sm text-gray-300 mb-1">Visit Our Office</p>
                   <p className="text-lg font-medium leading-relaxed">
-                    Boulevard Road, Ghat No. 7,<br/>Dal Lake, Srinagar, Kashmir
+                    Main Road Beehama, <br/>Ganderbal, J&K - 191201
                   </p>
                 </div>
               </div>

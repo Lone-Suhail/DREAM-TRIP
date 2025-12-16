@@ -78,13 +78,13 @@ const Navbar = () => {
           })}
 
           {/* Call Button */}
-          <a href="tel:+919999999999" className={`hidden lg:flex items-center gap-2 font-bold px-4 py-2 rounded-full transition-all text-sm border ${
+          <a href="tel:+919149726260" className={`hidden lg:flex items-center gap-2 font-bold px-4 py-2 rounded-full transition-all text-sm border ${
              isSticky 
               ? 'border-[#1E3A8A] text-[#1E3A8A] hover:bg-[#1E3A8A] hover:text-white' 
               : 'border-white text-white hover:bg-white hover:text-[#1E3A8A]'
           }`}>
              <Phone size={16} />
-             <span>+91 99066 12345</span>
+             <span>+91 9149 726260</span>
           </a>
 
           {/* Plan Trip Button */}

@@ -43,13 +43,13 @@ function BookingForm() {
               
               <div className="mt-12 pt-12 border-t border-blue-800 space-y-4">
                 <div className="flex items-center gap-3 text-blue-200">
-                  <Phone size={18} /> +91 99999 99999
+                  <Phone size={18} /> +91 9149726260
                 </div>
                 <div className="flex items-center gap-3 text-blue-200">
-                  <Mail size={18} /> hello@dreamtrip.com
+                  <Mail size={18} /> info@dreamtrip.co.in
                 </div>
                 <div className="flex items-center gap-3 text-blue-200">
-                  <MapPin size={18} /> Srinagar, Kashmir
+                  <MapPin size={18} /> Main Road Beehama, Ganderbal, J&K - 191201
                 </div>
               </div>
             </div>
