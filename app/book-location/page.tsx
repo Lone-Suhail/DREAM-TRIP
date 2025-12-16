@@ -22,16 +22,29 @@ function LocationBookingForm() {
   const [selectedCar, setSelectedCar] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: '', phone: '', date: '' });
 
-  // --- FIX: MOBILE DATE BLOCKER (Local Time) ---
+  // --- FIX 1: MANUAL DATE BUILDER (Local Time) ---
   const [minDate, setMinDate] = useState('');
   useEffect(() => {
     const dt = new Date();
     const year = dt.getFullYear();
     const month = String(dt.getMonth() + 1).padStart(2, '0');
     const day = String(dt.getDate()).padStart(2, '0');
-    setMinDate(`${year}-${month}-${day}`);
+    setMinDate(`${year}-${month}-${day}`); // Always "YYYY-MM-DD"
   }, []);
   // ---------------------------------------------
+
+  // --- FIX 2: STRICT DATE GUARD ---
+  // If the mobile phone allows a past date, this function KILLS IT immediately.
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.value;
+    if (selected < minDate) {
+       alert("⚠️ You cannot select a past date. Please choose today or a future date.");
+       setFormData({ ...formData, date: '' }); // Clear the invalid date
+    } else {
+       setFormData({ ...formData, date: selected });
+    }
+  };
+  // -------------------------------
 
   // Hotel Categories
   const categories = [
@@ -165,14 +178,17 @@ Please suggest best hotels in this category.`;
                  </div>
                  <div className="md:col-span-2">
                     <label className="text-sm font-bold text-gray-700 block mb-2">Travel Date</label>
+                    
+                    {/* INPUT WITH STRICT GUARD */}
                     <input 
                         type="date" 
                         required 
-                        min={minDate} // <--- MOBILE FIX HERE
+                        min={minDate} 
                         value={formData.date} 
-                        onChange={(e) => setFormData({...formData, date: e.target.value})} 
-                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#D97706]" 
+                        onChange={handleDateChange} // <--- Strict Handler
+                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#D97706] font-bold text-gray-700" 
                     />
+                    
                  </div>
               </div>
             </section>

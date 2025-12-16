@@ -21,14 +21,14 @@ function TaxiBookingForm() {
   const [vehicle, setVehicle] = useState(initialVehicle);
   const [tripType, setTripType] = useState('tour'); // 'tour' or 'transfer'
 
-  // --- FIX: MOBILE DATE BLOCKER (Local Time) ---
+  // --- FIX 1: MANUAL DATE BUILDER (Local Time) ---
   const [minDate, setMinDate] = useState('');
   useEffect(() => {
     const dt = new Date();
     const year = dt.getFullYear();
     const month = String(dt.getMonth() + 1).padStart(2, '0');
     const day = String(dt.getDate()).padStart(2, '0');
-    setMinDate(`${year}-${month}-${day}`);
+    setMinDate(`${year}-${month}-${day}`); // Always "YYYY-MM-DD"
   }, []);
   // ---------------------------------------------
 
@@ -45,12 +45,24 @@ function TaxiBookingForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Handle Input Changes
+  // General Input Handler
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- 2. SUBMIT LOGIC (WHATSAPP) ---
+  // --- FIX 2: STRICT DATE GUARD ---
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.value;
+    if (selected < minDate) {
+       alert("⚠️ You cannot select a past date. Please choose today or a future date.");
+       setFormData({ ...formData, startDate: '' }); // Clear invalid date
+    } else {
+       setFormData({ ...formData, startDate: selected });
+    }
+  };
+  // -------------------------------
+
+  // --- 3. SUBMIT LOGIC (WHATSAPP) ---
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -83,7 +95,7 @@ ${tripType === 'transfer' ? `*📍 Drop:* ${formData.dropLocation}` : ''}
 Please confirm availability and price.`;
 
       // Open WhatsApp
-      const phoneNumber = "919149726260"; // <--- REPLACE WITH YOUR NUMBER
+      const phoneNumber = "919149726260"; 
       const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
       
       window.open(url, '_blank');
@@ -200,14 +212,18 @@ Please confirm availability and price.`;
                       <label className="block text-sm font-bold text-gray-700 mb-2">Start Date</label>
                       <div className="relative">
                           <Calendar className="absolute top-3.5 left-4 text-gray-400" size={18} />
+                          
+                          {/* STRICT DATE GUARD ADDED HERE */}
                           <input 
                             type="date" 
                             name="startDate"
-                            min={minDate} // <--- FIXED HERE
+                            min={minDate} 
                             required
-                            value={formData.startDate} onChange={handleChange}
+                            value={formData.startDate} 
+                            onChange={handleDateChange} // <--- USING STRICT HANDLER
                             className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none" 
                           />
+                          
                       </div>
                     </div>
                     <div>
