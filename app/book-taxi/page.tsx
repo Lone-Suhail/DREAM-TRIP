@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Car, MapPin, Calendar, Clock, Phone, User, CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 
@@ -20,7 +20,18 @@ function TaxiBookingForm() {
   const initialVehicle = searchParams.get('vehicle') || 'sedan';
   const [vehicle, setVehicle] = useState(initialVehicle);
   const [tripType, setTripType] = useState('tour'); // 'tour' or 'transfer'
-  const today = new Date().toISOString().split("T")[0];
+
+  // --- FIX: MOBILE DATE BLOCKER (Local Time) ---
+  const [minDate, setMinDate] = useState('');
+  useEffect(() => {
+    const dt = new Date();
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    setMinDate(`${year}-${month}-${day}`);
+  }, []);
+  // ---------------------------------------------
+
   // Form Fields
   const [formData, setFormData] = useState({
     name: '',
@@ -137,21 +148,21 @@ Please confirm availability and price.`;
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Vehicle Type</label>
                     <div className="grid grid-cols-3 gap-3">
-                       <label className={`border rounded-xl p-3 cursor-pointer text-center hover:border-[#D97706] transition-all ${vehicle === 'sedan' ? 'border-[#D97706] bg-orange-50' : 'border-gray-200'}`}>
+                        <label className={`border rounded-xl p-3 cursor-pointer text-center hover:border-[#D97706] transition-all ${vehicle === 'sedan' ? 'border-[#D97706] bg-orange-50' : 'border-gray-200'}`}>
                           <input type="radio" name="vehicle" value="sedan" checked={vehicle === 'sedan'} onChange={() => setVehicle('sedan')} className="hidden" />
                           <span className="block font-bold text-[#1E3A8A] text-sm">Sedan</span>
                           <span className="text-[10px] text-gray-400">4 Pax</span>
-                       </label>
-                       <label className={`border rounded-xl p-3 cursor-pointer text-center hover:border-[#D97706] transition-all ${vehicle === 'suv' ? 'border-[#D97706] bg-orange-50' : 'border-gray-200'}`}>
+                        </label>
+                        <label className={`border rounded-xl p-3 cursor-pointer text-center hover:border-[#D97706] transition-all ${vehicle === 'suv' ? 'border-[#D97706] bg-orange-50' : 'border-gray-200'}`}>
                           <input type="radio" name="vehicle" value="suv" checked={vehicle === 'suv'} onChange={() => setVehicle('suv')} className="hidden" />
                           <span className="block font-bold text-[#1E3A8A] text-sm">Innova (SUV)</span>
                           <span className="text-[10px] text-gray-400">6-7 Pax</span>
-                       </label>
-                       <label className={`border rounded-xl p-3 cursor-pointer text-center hover:border-[#D97706] transition-all ${vehicle === 'tempo' ? 'border-[#D97706] bg-orange-50' : 'border-gray-200'}`}>
+                        </label>
+                        <label className={`border rounded-xl p-3 cursor-pointer text-center hover:border-[#D97706] transition-all ${vehicle === 'tempo' ? 'border-[#D97706] bg-orange-50' : 'border-gray-200'}`}>
                           <input type="radio" name="vehicle" value="tempo" checked={vehicle === 'tempo'} onChange={() => setVehicle('tempo')} className="hidden" />
                           <span className="block font-bold text-[#1E3A8A] text-sm">Tempo</span>
                           <span className="text-[10px] text-gray-400">12+ Pax</span>
-                       </label>
+                        </label>
                     </div>
                   </div>
 
@@ -188,12 +199,15 @@ Please confirm availability and price.`;
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-2">Start Date</label>
                       <div className="relative">
-                         <Calendar className="absolute top-3.5 left-4 text-gray-400" size={18} />
-                         <input 
-                            type="date" name="startDate"min={today} required
+                          <Calendar className="absolute top-3.5 left-4 text-gray-400" size={18} />
+                          <input 
+                            type="date" 
+                            name="startDate"
+                            min={minDate} // <--- FIXED HERE
+                            required
                             value={formData.startDate} onChange={handleChange}
                             className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none" 
-                         />
+                          />
                       </div>
                     </div>
                     <div>
@@ -201,8 +215,8 @@ Please confirm availability and price.`;
                         {tripType === 'tour' ? 'Duration (Days)' : 'Pickup Time'}
                       </label>
                       <div className="relative">
-                         <Clock className="absolute top-3.5 left-4 text-gray-400" size={18} />
-                         {tripType === 'tour' ? (
+                          <Clock className="absolute top-3.5 left-4 text-gray-400" size={18} />
+                          {tripType === 'tour' ? (
                             <select 
                               name="durationOrTime"
                               value={formData.durationOrTime} onChange={handleChange}
@@ -215,13 +229,13 @@ Please confirm availability and price.`;
                               <option value="6 Days">6 Days</option>
                               <option value="7+ Days">7+ Days</option>
                             </select>
-                         ) : (
+                          ) : (
                             <input 
                               type="time" name="durationOrTime"
                               value={formData.durationOrTime} onChange={handleChange}
                               className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none" 
                             />
-                         )}
+                          )}
                       </div>
                     </div>
                   </div>
@@ -241,7 +255,7 @@ Please confirm availability and price.`;
                   </div>
                   
                   {tripType === 'transfer' && (
-                     <div>
+                      <div>
                         <label className="block text-sm font-bold text-gray-700 mb-2">Drop Location</label>
                         <div className="relative">
                           <MapPin className="absolute top-3.5 left-4 text-gray-400" size={18} />
@@ -252,7 +266,7 @@ Please confirm availability and price.`;
                             className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none" 
                           />
                         </div>
-                     </div>
+                      </div>
                   )}
 
                   <button 

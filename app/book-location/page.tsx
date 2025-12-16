@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Star, Car, CheckCircle, ArrowRight, Hotel, ShieldCheck } from 'lucide-react';
 
@@ -21,6 +21,17 @@ function LocationBookingForm() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedCar, setSelectedCar] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: '', phone: '', date: '' });
+
+  // --- FIX: MOBILE DATE BLOCKER (Local Time) ---
+  const [minDate, setMinDate] = useState('');
+  useEffect(() => {
+    const dt = new Date();
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    setMinDate(`${year}-${month}-${day}`);
+  }, []);
+  // ---------------------------------------------
 
   // Hotel Categories
   const categories = [
@@ -67,7 +78,7 @@ function LocationBookingForm() {
 ---------------------------
 Please suggest best hotels in this category.`;
 
-    const phoneNumber = "+91 9149726260"; // REPLACE WITH YOUR NUMBER
+    const phoneNumber = "919149726260"; // REPLACE WITH YOUR NUMBER
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
@@ -154,7 +165,14 @@ Please suggest best hotels in this category.`;
                  </div>
                  <div className="md:col-span-2">
                     <label className="text-sm font-bold text-gray-700 block mb-2">Travel Date</label>
-                    <input type="date" required value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#D97706]" />
+                    <input 
+                        type="date" 
+                        required 
+                        min={minDate} // <--- MOBILE FIX HERE
+                        value={formData.date} 
+                        onChange={(e) => setFormData({...formData, date: e.target.value})} 
+                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#D97706]" 
+                    />
                  </div>
               </div>
             </section>

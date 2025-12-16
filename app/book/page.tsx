@@ -4,23 +4,29 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Calendar, User, Phone, Users, CheckCircle, ArrowRight, IndianRupee } from 'lucide-react';
 
-// We need this wrapper component to handle the Search Params safely
+// Wrapper component to handle Search Params safely
 function BookingForm() {
   const searchParams = useSearchParams();
   
-  // Get Today's Date to block past dates
-  const today = new Date().toISOString().split("T")[0];
+  // --- FIX 1: MOBILE DATE BLOCKER (INDIA TIME) ---
+  const [minDate, setMinDate] = useState('');
+  useEffect(() => {
+    const dt = new Date();
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    setMinDate(`${year}-${month}-${day}`);
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    date: '',
-    guests: '',
-    // If they came from a link like /book?package=Honeymoon, pre-fill it
+    // --- FIX 2: CATCH DATE FROM PREVIOUS PAGE ---
+    date: searchParams.get('date') || '', 
+    guests: searchParams.get('travelers') || '',
     packageName: searchParams.get('package') || '', 
-    // If they came from a link like /book?budget=Economy, pre-fill it
     budget: searchParams.get('budget') || '', 
-    message: ''
+    message: searchParams.get('message') || ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -39,13 +45,14 @@ function BookingForm() {
     // WHATSAPP MESSAGE GENERATION
     const phoneNumber = "919149726260"; // YOUR NUMBER
     
+    // Clean up the message format
     const text = `*New Booking Request* 🏔️%0A%0A` +
       `📦 *Package:* ${formData.packageName || "Not Specified"}%0A` +
       `👤 *Name:* ${formData.name}%0A` +
       `📞 *Phone:* ${formData.phone}%0A` +
       `📅 *Date:* ${formData.date}%0A` +
       `👥 *Guests:* ${formData.guests}%0A` +
-      `💰 *Budget:* ₹${formData.budget}%0A` +
+      `💰 *Budget:* ${formData.budget ? '₹' + formData.budget : 'Not Specified'}%0A` +
       `📝 *Note:* ${formData.message}`;
 
     window.open(`https://wa.me/${phoneNumber}?text=${text}`, '_blank');
@@ -54,8 +61,6 @@ function BookingForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       
-      
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
@@ -68,6 +73,7 @@ function BookingForm() {
             onChange={handleChange}
             className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
             required 
+            placeholder="Enter your name"
           />
         </div>
         <div>
@@ -94,7 +100,7 @@ function BookingForm() {
           <input 
             type="date" 
             name="date" 
-            min={today} // BLOCKS PAST DATES
+            min={minDate} // <--- BLOCKS PAST DATES CORRECTLY
             value={formData.date}
             onChange={handleChange}
             className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A]"
@@ -122,7 +128,7 @@ function BookingForm() {
            <IndianRupee size={16} className="text-[#D97706]" /> Your Budget (Total)
         </label>
         <input 
-          type="number" 
+          type="text" 
           name="budget" 
           value={formData.budget}
           onChange={handleChange}
