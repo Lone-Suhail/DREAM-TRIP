@@ -31,8 +31,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://dreamtrip.co.in'),
   title: {
-    default: "Dream Trip Kashmir | Best Travel Agency in Srinagar",
-    template: "%s | Dream Trip Kashmir"
+    default: "Dream Trip",
+    template: "%s | Dream Trip"
   },
   description: "Plan your perfect Kashmir holiday with Dream Trip. We offer luxury tour packages, budget stays, houseboat bookings, and reliable taxi services.",
   keywords: ["Kashmir tour packages", "Srinagar taxi service", "Gulmarg hotels", "Kashmir tourism", "Dal Lake houseboat"],
