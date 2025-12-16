@@ -54,18 +54,7 @@ function BookingForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       
-      {/* Package Name (Auto-filled but editable) */}
-      <div>
-        <label className="block text-sm font-bold text-gray-700 mb-2">Package / Trip Name</label>
-        <input 
-          type="text" 
-          name="packageName" 
-          value={formData.packageName}
-          onChange={handleChange}
-          placeholder="e.g. Kashmir Honeymoon Special"
-          className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1E3A8A] font-medium"
-        />
-      </div>
+      
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
