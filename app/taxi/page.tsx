@@ -133,7 +133,7 @@ export default function TaxiServices() {
                                     Book Now
                                 </button>
                             </Link>
-                            <a href={`https://wa.me/+91 9149726260?text=I want to inquire about ${car.name}`} target="_blank" className="px-4 py-3 rounded-xl border border-gray-200 hover:border-green-500 hover:bg-green-50 text-green-600 transition-all">
+                            <a href={`https://wa.me/+919149726260?text=I want to inquire about ${car.name}`} target="_blank" className="px-4 py-3 rounded-xl border border-gray-200 hover:border-green-500 hover:bg-green-50 text-green-600 transition-all">
                                 <Phone size={20} />
                             </a>
                         </div>
