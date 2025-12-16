@@ -3,32 +3,24 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Logic: Navbar is "Sticky" (White background) if we scroll OR if we are NOT on the home page
   const isHome = pathname === "/";
-  const isSticky = scrolled || !isHome;
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      setScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Packages', href: '/packages' },
-    { name: 'Destinations', href: '/destinations' },
-    { name: 'Taxi Rental', href: '/taxi' },
-    { name: 'About', href: '/about' },
-  ];
+  const isSticky = scrolled || !isHome;
 
   return (
     <nav 
@@ -46,45 +38,20 @@ const Navbar = () => {
             D
           </div>
           <span className={`text-2xl font-serif font-bold tracking-tight ${isSticky ? 'text-[#1E3A8A]' : 'text-white'}`}>
-            Dream<span className="text-[#D97706]">Trip</span>
+            Dream Trip
           </span>
         </Link>
 
         {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name}
-              href={link.href} 
-              className={`font-medium transition-colors cursor-pointer relative ${
-                // LOGIC: If we are on this page, make it ORANGE. 
-                // If not, make it Blue (if sticky) or White (if transparent).
-                pathname === link.href 
-                  ? 'text-[#D97706] font-bold' 
-                  : isSticky 
-                    ? 'text-gray-700 hover:text-[#D97706]' 
-                    : 'text-white/90 hover:text-[#D97706]'
-              }`}
-            >
-              {link.name}
-              {/* Little Orange Dot under active link */}
-              {pathname === link.href && (
-                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#D97706] rounded-full"></span>
-              )}
-            </Link>
-          ))}
-
-          {/* Call Button (Restored) */}
-          <a href="tel:+919999999999" className={`flex items-center gap-2 font-bold px-4 py-2 rounded-full transition-all text-sm border ${
-             isSticky 
-              ? 'border-[#1E3A8A] text-[#1E3A8A] hover:bg-[#1E3A8A] hover:text-white' 
-              : 'border-white text-white hover:bg-white hover:text-[#1E3A8A]'
-          }`}>
-             <Phone size={16} />
-             <span>+91 99066 12345</span>
-          </a>
-
-          {/* Plan Trip Button */}
+        <div className={`hidden md:flex items-center gap-8 ${isSticky ? 'text-gray-700' : 'text-white/90'}`}>
+          <Link href="/" className="hover:text-[#D97706] transition-colors font-medium cursor-pointer">Home</Link>
+          <Link href="/about" className="hover:text-[#D97706] transition-colors font-medium cursor-pointer">About</Link>
+          <Link href="/packages" className="hover:text-[#D97706] transition-colors font-medium cursor-pointer">Packages</Link>
+          <Link href="/destinations" className="hover:text-[#D97706] transition-colors font-medium cursor-pointer">Destinations</Link>
+          <Link href="/taxi" className="hover:text-[#D97706] transition-colors font-medium cursor-pointer">Taxi Services</Link>
+          <Link href="/contact" className="hover:text-[#D97706] transition-colors font-medium cursor-pointer">Contact</Link>
+          
+          {/* FIX: Applied styles directly to Link, removed <button> tag */}
           <Link 
             href="/plan" 
             className="bg-[#D97706] text-white px-5 py-2 rounded-full font-bold hover:bg-amber-600 transition-all shadow-md hover:shadow-lg text-sm cursor-pointer"
@@ -104,21 +71,16 @@ const Navbar = () => {
 
       {/* MOBILE MENU DROPDOWN */}
       {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-2xl md:hidden flex flex-col items-center gap-6 py-10 animate-fade-in-up border-t border-gray-100 h-screen">
-          {navLinks.map((link) => (
-             <Link 
-               key={link.name}
-               href={link.href} 
-               onClick={() => setIsOpen(false)} 
-               className={`text-xl font-medium cursor-pointer ${
-                 pathname === link.href ? 'text-[#D97706] font-bold' : 'text-gray-800 hover:text-[#D97706]'
-               }`}
-             >
-               {link.name}
-             </Link>
-          ))}
+        <div className="absolute top-full left-0 w-full bg-white shadow-2xl md:hidden flex flex-col items-center gap-6 py-10 animate-fade-in-up border-t border-gray-100">
+          <Link href="/" onClick={() => setIsOpen(false)} className="text-xl font-medium hover:text-[#D97706] cursor-pointer">Home</Link>
+          <Link href="/about" onClick={() => setIsOpen(false)} className="text-xl font-medium hover:text-[#D97706] cursor-pointer">About</Link>
+          <Link href="/packages" onClick={() => setIsOpen(false)} className="text-xl font-medium hover:text-[#D97706] cursor-pointer">Packages</Link>
+          <Link href="/destinations" onClick={() => setIsOpen(false)} className="text-xl font-medium hover:text-[#D97706] cursor-pointer">Destinations</Link>
+          <Link href="/taxi" onClick={() => setIsOpen(false)} className="text-xl font-medium hover:text-[#D97706] cursor-pointer">Taxi Services</Link>
+          <Link href="/contact" onClick={() => setIsOpen(false)} className="text-xl font-medium hover:text-[#D97706] cursor-pointer">Contact</Link>
           
-          <Link href="/plan" onClick={() => setIsOpen(false)} className="w-auto mt-4">
+          {/* FIX: Mobile Button Link */}
+          <Link href="/plan" onClick={() => setIsOpen(false)} className="w-auto">
             <div className="bg-[#D97706] text-white px-8 py-3 rounded-full font-bold shadow-lg cursor-pointer text-center">
               Plan My Trip
             </div>
