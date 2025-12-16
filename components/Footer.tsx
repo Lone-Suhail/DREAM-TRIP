@@ -46,7 +46,7 @@ const Footer = () => {
               <li><Link href="/contact" className="hover:text-white hover:translate-x-1 transition-all inline-block">Contact Us</Link></li>
               <li><Link href="/privacy" className="hover:text-white hover:translate-x-1 transition-all inline-block">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-white hover:translate-x-1 transition-all inline-block">Terms & Conditions</Link></li>
-              <li><Link href="/book?title=General Inquiry" className="hover:text-white hover:translate-x-1 transition-all inline-block">Booking Policy</Link></li>
+              <li><Link href="/booking-policy" className="hover:text-white transition-colors">Booking Policy</Link></li>
             </ul>
           </div>
 
@@ -56,15 +56,15 @@ const Footer = () => {
             <ul className="space-y-4 text-sm text-blue-100">
               <li className="flex items-start gap-3">
                 <MapPin size={20} className="shrink-0 text-[#D97706]" />
-                <span>Boulevard Road, Dal Lake, Srinagar, J&K - 190001</span>
+                <span> Main Road Beehama, Ganderbal, J&K - 191201</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={20} className="shrink-0 text-[#D97706]" />
-                <span>+91 99999 XXXXX</span>
+                <span>+91 9149726260</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={20} className="shrink-0 text-[#D97706]" />
-                <span>bookings@dreamtrip.com</span>
+                <span>info@dreamtrip.co.in</span>
               </li>
             </ul>
           </div>
