@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, Twitter, MapPin, Phone, Mail, Globe } from 'lucide-react';
+import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp MapPin, Phone, Mail, Globe } from 'react-icons/fa';
 
 const Footer = () => {
   return (
@@ -15,15 +15,21 @@ const Footer = () => {
               Your trusted partner for exploring the paradise of Kashmir. We craft unforgettable journeys with a touch of local hospitality.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
-                <Instagram size={20} />
+              <a href="https://facebook.com/DREAMTRIP" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
+                <FaInstagram size={20} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
-                <Facebook size={20} />
+              <a href="https://instagram.com/dream.trip44" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
+                <FaFacebookF size={20} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#D97706] transition-colors">
-                <Twitter size={20} />
-              </a>
+              <a 
+              href="https://wa.me/9149726260" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300"
+              aria-label="WhatsApp"
+            >
+              <FaWhatsapp />
+            </a>
             </div>
           </div>
 
