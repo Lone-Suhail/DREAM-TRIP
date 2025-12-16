@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://dreamtripkashmir.com/sitemap.xml',
+    sitemap: 'https://dreamtrip.co.in/sitemap.xml',
   }
 }

@@ -20,7 +20,7 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dreamtripkashmir.com'),
+  metadataBase: new URL('https://dreamtrip.co.in'),
   title: {
     default: "Dream Trip Kashmir | Best Travel Agency in Srinagar",
     template: "%s | Dream Trip Kashmir"
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Dream Trip Kashmir | Best Travel Agency in Srinagar",
     description: "Book affordable Kashmir tour packages and taxi services. Local experts, 24/7 support.",
-    url: 'https://dreamtripkashmir.com',
+    url: 'https://dreamtrip.co.in',
     siteName: 'Dream Trip Kashmir',
-    locale: 'en_US',
+    locale: 'en_IN',
     type: 'website',
   },
 };
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en-IN" className="scroll-smooth">
       <body className={`${playfair.variable} ${lato.variable} font-sans`}>
         <Navbar />
         {children}
