@@ -20,7 +20,7 @@ function TaxiBookingForm() {
   const initialVehicle = searchParams.get('vehicle') || 'sedan';
   const [vehicle, setVehicle] = useState(initialVehicle);
   const [tripType, setTripType] = useState('tour'); // 'tour' or 'transfer'
-  
+  const today = new Date().toISOString().split("T")[0];
   // Form Fields
   const [formData, setFormData] = useState({
     name: '',
@@ -190,7 +190,7 @@ Please confirm availability and price.`;
                       <div className="relative">
                          <Calendar className="absolute top-3.5 left-4 text-gray-400" size={18} />
                          <input 
-                            type="date" name="startDate" required
+                            type="date" name="startDate"min={today} required
                             value={formData.startDate} onChange={handleChange}
                             className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#D97706] focus:ring-0 outline-none" 
                          />
