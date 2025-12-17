@@ -47,7 +47,7 @@ export default function TaxiServices() {
       <section className="relative h-[400px] overflow-hidden flex items-center justify-center">
          <div className="absolute inset-0 bg-black/60 z-10"></div>
          <img 
-            src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1200&auto=format&fit=crop" 
+            src="cover-image.jpg" 
             className="absolute inset-0 w-full h-full object-cover"
             alt="Road trip in Kashmir"
          />
