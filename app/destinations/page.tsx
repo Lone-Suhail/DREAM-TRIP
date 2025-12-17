@@ -249,7 +249,7 @@ export default function Destinations() {
                      Build My Itinerary
                   </button>
                </Link>
-               <a href="https://wa.me/919999999999" target="_blank" className="px-8 py-4 border border-white/30 text-white font-bold rounded-full hover:bg-white/10 transition-colors">
+               <a href="https://wa.me/919149726260" target="_blank" className="px-8 py-4 border border-white/30 text-white font-bold rounded-full hover:bg-white/10 transition-colors">
                   Chat with Expert
                </a>
             </div>
