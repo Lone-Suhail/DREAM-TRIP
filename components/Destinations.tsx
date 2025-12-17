@@ -1,9 +1,13 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { destinations } from '../data/destinations'; // Import the data
+// --- FIX: Use @ alias for safer import ---
+import { destinations } from '@/data/destinations'; 
 
 const Destinations = () => {
+  // Take top 4 destinations for Home Page
+  const topDestinations = destinations.slice(0, 4);
+
   return (
     <section id="destinations" className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -16,7 +20,7 @@ const Destinations = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {destinations.map((place) => (
+          {topDestinations.map((place) => (
             <Link key={place.id} href={`/destinations/${place.id}`} className="block">
               <div className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer shadow-lg border border-gray-100">
                 <img 
@@ -27,7 +31,7 @@ const Destinations = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 text-white">
                   <h3 className="text-2xl font-bold font-serif mb-1">{place.name}</h3>
                   
-                  <p className="text-sm text-gray-200 mb-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-0 md:translate-y-4 group-hover:translate-y-0 leading-relaxed">
+                  <p className="text-sm text-gray-200 mb-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-0 md:translate-y-4 group-hover:translate-y-0 leading-relaxed line-clamp-2">
                     {place.brief}
                   </p>
                   
@@ -39,6 +43,15 @@ const Destinations = () => {
             </Link>
           ))}
         </div>
+        
+        <div className="text-center mt-12">
+           <Link href="/destinations">
+             <button className="px-8 py-3 bg-[#1E3A8A] text-white font-bold rounded-full hover:bg-blue-900 transition-all shadow-lg">
+                View All Destinations
+             </button>
+           </Link>
+        </div>
+
       </div>
     </section>
   );
