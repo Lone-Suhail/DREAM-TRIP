@@ -174,7 +174,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                     </div>
 
                     {/* Book Button */}
-                    <Link href={`/book?package=${encodeURIComponent(pkg.title)}&budget=${pkg.price}&message=I am interested in ${pkg.title}`}>
+                    <Link href={`/book?package=${encodeURIComponent(pkg.title)}`}>
                         <button className="w-full bg-[#D97706] hover:bg-blue-900 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 mb-3 flex items-center justify-center gap-2">
                             Proceed to Book <ArrowRight size={20} />
                         </button>

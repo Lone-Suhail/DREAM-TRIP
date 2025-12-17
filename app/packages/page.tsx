@@ -3,108 +3,8 @@
 import React, { useState } from 'react';
 import { Clock, MapPin, Star, CheckCircle, Users, ArrowRight, Filter, Tag, Wand2 } from 'lucide-react';
 import Link from 'next/link';
-
-<div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-8 mx-auto max-w-4xl">
-  <p className="text-orange-700 text-sm">
-    <strong>Note:</strong> Prices indicated are "Starting From" rates and may vary based on 
-    season (Peak/Off-Peak), hotel category, and availability. 
-    Please contact us via WhatsApp for the exact current quotation.
-  </p>
-</div>
-
-// --- 1. DEFINE DATA HERE TO PREVENT ERRORS ---
-const packages = [
-  {
-    id: "honeymoon-special",
-    title: "Magical Kashmir Honeymoon",
-    image: "/gulmarg.jpg",
-    price: "18,500",
-    originalPrice: "24,000",
-    rating: 5,
-    reviews: 124,
-    nights: 4, // Used for filter
-    duration: "5 Days / 4 Nights",
-    location: "Srinagar, Gulmarg, Pahalgam",
-    minPax: 2,
-    tag: "Bestseller",
-    highlights: ["Candlelight Dinner", "Flower Decoration", "Shikara Ride", "Private Cab"]
-  },
-  {
-    id: "family-fun",
-    title: "Family Fun in Paradise",
-    image: "/pahalgam.jpg",
-    price: "14,999",
-    originalPrice: "18,500",
-    rating: 4.8,
-    reviews: 89,
-    nights: 5,
-    duration: "6 Days / 5 Nights",
-    location: "Pahalgam, Gulmarg",
-    minPax: 4,
-    tag: "Value Deal",
-    highlights: ["Houseboat Stay", "Mughal Gardens", "Betaab Valley", "Breakfast & Dinner"]
-  },
-  {
-    id: "adventure-trek",
-    title: "Kashmir Adventure Trek",
-    image: "/sonamarg.jpg",
-    price: "12,500",
-    originalPrice: "15,000",
-    rating: 4.9,
-    reviews: 56,
-    nights: 3,
-    duration: "4 Days / 3 Nights",
-    location: "Sonamarg, Srinagar",
-    minPax: 2,
-    tag: "Adventure",
-    highlights: ["Thajiwas Glacier", "River Rafting", "Camping", "Bonfire Night"]
-  },
-  {
-    id: "gurez-expedition",
-    title: "Offbeat Gurez Valley",
-    image: "/gurez.jpg",
-    price: "16,000",
-    originalPrice: "20,000",
-    rating: 5.0,
-    reviews: 32,
-    nights: 4,
-    duration: "5 Days / 4 Nights",
-    location: "Gurez, Razdan Pass",
-    minPax: 2,
-    tag: "Trending",
-    highlights: ["Habba Khatoon Peak", "Kishanganga River", "Camping", "Star Gazing"]
-  },
-  {
-    id: "winter-special",
-    title: "Snowy Winter Wonderland",
-    image: "/gulmarg.jpg",
-    price: "20,000",
-    originalPrice: "28,000",
-    rating: 4.7,
-    reviews: 45,
-    nights: 4,
-    duration: "5 Days / 4 Nights",
-    location: "Gulmarg Ski Resort",
-    minPax: 2,
-    tag: "Winter Special",
-    highlights: ["Skiing Course", "Snow Chain Cab", "Heated Rooms", "Gondola Phase 1"]
-  },
-  {
-    id: "short-escape",
-    title: "Srinagar Weekend Escape",
-    image: "/srinagar.jpg",
-    price: "9,500",
-    originalPrice: "12,000",
-    rating: 4.6,
-    reviews: 210,
-    nights: 2,
-    duration: "3 Days / 2 Nights",
-    location: "Srinagar City",
-    minPax: 2,
-    tag: "Quick Trip",
-    highlights: ["Dal Lake Stay", "Shikara Ride", "Mughal Gardens", "Airport Pickup"]
-  }
-];
+// --- FIX: IMPORT DATA FROM CENTRAL FILE (Fixes the Page Not Found error) ---
+import { packages } from '@/data/packages'; 
 
 // Filter Categories
 const filters = [
@@ -137,7 +37,8 @@ export default function PackagesPage() {
         </p>
       </div>
 
-      {/* --- DISCLAIMER MOVED HERE (INSIDE THE FUNCTION) --- */}
+      {/* --- DISCLAIMER (Kept exactly as requested) --- */}
+      <div className="container mx-auto px-4 mb-8">
         <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mx-auto max-w-4xl text-left shadow-sm rounded-r-lg">
           <p className="text-orange-700 text-sm">
             <strong>Note:</strong> Prices indicated are "Starting From" rates and may vary based on 
@@ -145,7 +46,7 @@ export default function PackagesPage() {
             Please contact us via WhatsApp for the exact current quotation.
           </p>
         </div>
-        {/* --------------------------------------------------- */}
+      </div>
 
       {/* --- BUILD YOUR TRIP BANNER --- */}
       <div className="container mx-auto px-4 mb-12">
@@ -235,7 +136,8 @@ export default function PackagesPage() {
                 </div>
 
                 <div className="space-y-3 mb-6 bg-gray-50 p-4 rounded-xl">
-                  {pkg.highlights.map((highlight, idx) => (
+                  {/* Take first 3 highlights only to keep cards uniform */}
+                  {pkg.highlights.slice(0, 3).map((highlight, idx) => (
                     <div key={idx} className="flex items-center gap-2.5 text-sm text-gray-700">
                       <CheckCircle size={16} className="text-[#1E3A8A] shrink-0" />
                       <span>{highlight}</span>
@@ -265,6 +167,7 @@ export default function PackagesPage() {
                             </div>
                         </div>
 
+                        {/* --- LINK NOW USES THE CORRECT ID (e.g. 101) --- */}
                         <Link href={`/packages/${pkg.id}`}>
                             <button className="bg-[#1E3A8A] hover:bg-blue-900 text-white p-3.5 rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95">
                                 <ArrowRight size={20} />
