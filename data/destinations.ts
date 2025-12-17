@@ -1,77 +1,119 @@
 export const destinations = [
-    // --- POPULAR CLASSICS ---
-    {
-      id: "srinagar",
-      name: "Srinagar",
-      brief: "The heart of Kashmir. Dal Lake, Houseboats, and Mughal Gardens.",
-      description: "Srinagar is the summer capital of Jammu and Kashmir, situated on the banks of the Jhelum River. It is famous for its gardens, waterfronts, and houseboats.",
-      famousFor: ["Dal Lake Houseboats", "Mughal Gardens", "Shikara Rides", "Wazwan Cuisine"],
-      activities: ["Shikara Ride at Sunset", "Stay in a Heritage Houseboat", "Visit Shankaracharya Temple", "Shopping at Lal Chowk"],
-      image: "/srinagar.jpg" // <--- Points to public/srinagar.jpg
-    },
-    {
-      id: "gulmarg",
-      name: "Gulmarg",
-      brief: "The meadow of flowers. World-class skiing and the highest gondola.",
-      description: "Gulmarg is a town, a hill station, a popular skiing destination. It is situated in the Pir Panjal Range in the Western Himalayas.",
-      famousFor: ["Skiing", "Gulmarg Gondola (Cable Car)", "Snowboarding", "Golf Course"],
-      activities: ["Ride the Gondola to Phase 2", "Skiing Course", "ATV Bike Ride", "Visit St. Mary’s Church"],
-      image: "/gulmarg.jpg"
-    },
-    {
-      id: "pahalgam",
-      name: "Pahalgam",
-      brief: "Valley of Shepherds. Betaab Valley and river rafting adventures.",
-      description: "Pahalgam is a hill station in the north Indian state of Jammu and Kashmir. Mountain trails run northeast to Amarnath Cave Temple.",
-      famousFor: ["Betaab Valley", "Aru Valley", "Lidder River", "Amarnath Yatra Base"],
-      activities: ["White Water Rafting", "Pony Ride to Baisaran", "Trek to Tulian Lake", "Camping in Aru Valley"],
-      image: "/pahalgam.jpg"
-    },
-    {
-      id: "sonamarg",
-      name: "Sonamarg",
-      brief: "Meadow of Gold. Glaciers, trekking, and thajiwas glacier.",
-      description: "Sonamarg gives rise to The Three Sisters (Kashmir). In its vicinity lies the great Himalayan glaciers of Kashmir Valley.",
-      famousFor: ["Thajiwas Glacier", "Zero Point", "Zojila Pass", "River Fishing"],
-      activities: ["Sledging on Glacier", "Trek to Vishansar Lake", "Drive to Zero Point", "Fishing in Sindh River"],
-      image: "/sonamarg.jpg"
-    },
-  
-    // --- OFFBEAT HIDDEN GEMS ---
-    {
-      id: "doodhpathri",
-      name: "Doodhpathri",
-      brief: "The 'Valley of Milk'. A lush green meadow with the crystal clear river.",
-      description: "Doodhpathri is a tourist destination and hill station in Kashmir. The water flowing through the meadows looks like milk from the distance.",
-      famousFor: ["Lush Green Meadows", "Shaliganga River", "Picnic Spots", "Pine Forests"],
-      activities: ["Riverside Camping", "Horse Riding", "Photography", "Nature Walks"],
-      image: "/doodhpathri.jpg"
-    },
-    {
-      id: "yusmarg",
-      name: "Yusmarg",
-      brief: "Meadow of Jesus. A quiet, untouched paradise with vast pastures.",
-      description: "Yusmarg is a hill station in the western part of Kashmir Valley. It is situated 47 km south of Srinagar.",
-      famousFor: ["Doodhganga River", "Nilnag Lake", "Trekking Trails", "Peace & Quiet"],
-      activities: ["Trek to Nilnag Lake", "Trout Fishing", "Picnic by Doodhganga", "Hiking"],
-      image: "/yusmarg.jpg"
-    },
-    {
-      id: "gurez",
-      name: "Gurez Valley",
-      brief: "The ultimate offbeat frontier. Famous for Habba Khatoon peak.",
-      description: "The Gurez Valley is located in the high Himalayas. It is surrounded by snow-capped mountains and has diverse fauna.",
-      famousFor: ["Habba Khatoon Peak", "Kishanganga River", "Dard Tribe Culture", "Razdan Pass"],
-      activities: ["Camping by the River", "Visiting Local Villages", "Star Gazing", "Fishing"],
-      image: "/gurez.jpg"
-    },
-    {
-      id: "sinthan",
-      name: "Sinthan Top",
-      brief: "A breathtaking mountain pass with 360-degree views and snow.",
-      description: "Sinthan Top is a popular tourist destination known for 360-degree views and snow even in summer.",
-      famousFor: ["360 Degree Views", "Year-round Snow", "Driving Adventure", "Daksum Valley"],
+  {
+    id: "srinagar",
+    name: "Srinagar",
+    tagline: "The Venice of the East",
+    brief: "The heart of Kashmir. Dal Lake, Houseboats, and Mughal Gardens.",
+    description: "Drift through the silent waters of Dal Lake on a Shikara, surrounded by the Zabarwan mountains. A city where Mughal gardens bloom and heritage floats.",
+    image: "/srinagar.jpg",
+    elevation: "1,585m",
+    distance: "0 km (Base)",
+    bestTime: "Apr - Oct",
+    weather: "15°C - 30°C",
+    color: "bg-blue-50 text-blue-900 border-blue-100",
+    famousFor: ["Dal Lake", "Mughal Gardens", "Houseboats"],
+    activities: ["Shikara Ride", "Houseboat Stay", "Mughal Gardens", "Old City Walk"]
+  },
+  {
+    id: "gulmarg",
+    name: "Gulmarg",
+    tagline: "The Meadow of Flowers",
+    brief: "World-class skiing and the highest gondola.",
+    description: "Ride the world's second-highest gondola to Mt. Apharwat. In winter, it's a white wonderland for skiing; in summer, a lush green paradise.",
+    image: "/gulmarg.jpg",
+    elevation: "2,650m",
+    distance: "51 km from Srinagar",
+    bestTime: "Dec - Mar (Snow)",
+    weather: "-4°C - 15°C",
+    color: "bg-emerald-50 text-emerald-900 border-emerald-100",
+    famousFor: ["Skiing", "Gondola", "Snow"],
+    activities: ["Gondola Ride", "Skiing", "Golfing", "ATV Ride"]
+  },
+  {
+    id: "pahalgam",
+    name: "Pahalgam",
+    tagline: "Valley of Shepherds",
+    brief: "Valley of Shepherds. Betaab Valley and river rafting.",
+    description: "The sound of the Lidder River follows you everywhere. Famous for its pine forests, Betaab Valley, and as the starting point for Amarnath Yatra.",
+    image: "/pahalgam.jpg",
+    elevation: "2,740m",
+    distance: "90 km from Srinagar",
+    bestTime: "Mar - Nov",
+    weather: "10°C - 25°C",
+    color: "bg-orange-50 text-orange-900 border-orange-100",
+    famousFor: ["Betaab Valley", "Lidder River", "Aru Valley"],
+    activities: ["Betaab Valley", "River Rafting", "Pony Ride", "Aru Valley"]
+  },
+  {
+    id: "sonamarg",
+    name: "Sonamarg",
+    tagline: "The Meadow of Gold",
+    brief: "Glaciers, trekking, and thajiwas glacier.",
+    description: "A gateway to the ancient Silk Road. Rugged mountains, glaciers that touch the road, and the mighty Sindh river make it a trekker's dream.",
+    image: "/sonamarg.jpg",
+    elevation: "2,800m",
+    distance: "80 km from Srinagar",
+    bestTime: "Apr - Oct",
+    weather: "8°C - 20°C",
+    color: "bg-yellow-50 text-yellow-900 border-yellow-100",
+    famousFor: ["Thajiwas Glacier", "Zero Point", "Trekking"],
+    activities: ["Thajiwas Glacier", "Sledging", "Zero Point", "Camping"]
+  },
+  {
+    id: "gurez",
+    name: "Gurez Valley",
+    tagline: "The Ultimate Offbeat Frontier",
+    brief: "Hidden beauty behind the high Razdan Pass.",
+    description: "Hidden behind the high Razdan Pass, Gurez is a fortress of nature. Famous for the pyramid-shaped Habba Khatoon peak and the pristine Kishanganga river.",
+    image: "/gurez.jpg",
+    elevation: "2,400m",
+    distance: "123 km from Srinagar",
+    bestTime: "May - Sep",
+    weather: "10°C - 20°C",
+    color: "bg-indigo-50 text-indigo-900 border-indigo-100",
+    famousFor: ["Habba Khatoon", "Kishanganga", "Offbeat"],
+    activities: ["Camping", "Kishanganga River", "Habba Khatoon", "Stargazing"]
+  },
+  {
+    id: "yusmarg",
+    name: "Yusmarg",
+    tagline: "The Meadow of Jesus",
+    brief: "A quiet, untouched paradise with vast pastures.",
+    description: "A quiet, serene meadow surrounded by dense pine forests. Less crowded than Gulmarg, it offers pure tranquility and the beautiful Doodhganga river.",
+    image: "/yusmarg.jpg",
+    elevation: "2,396m",
+    distance: "47 km from Srinagar",
+    bestTime: "May - Sep",
+    weather: "12°C - 24°C",
+    color: "bg-green-50 text-green-900 border-green-100",
+    famousFor: ["Doodhganga", "Nilnag Lake", "Peace"],
+    activities: ["Doodhganga Trek", "Horse Riding", "Picnic", "Nilnag Lake"]
+  },
+  {
+    id: "doodhpathri",
+    name: "Doodhpathri",
+    tagline: "The Valley of Milk",
+    brief: "Lush green meadow with crystal clear river.",
+    description: "An untouched bowl-shaped valley where the water crashes against rocks so white it looks like milk. Peaceful, pristine, and crowd-free.",
+    image: "/doodhpathri.jpg",
+    elevation: "2,730m",
+    distance: "42 km from Srinagar",
+    bestTime: "May - Sep",
+    weather: "10°C - 22°C",
+    color: "bg-teal-50 text-teal-900 border-teal-100",
+    famousFor: ["Meadows", "River", "Picnic"],
+    activities: ["Picnic", "Nature Walk", "Stream Crossing", "Relaxation"]
+  },
+{
+    id: "sinthan",
+    name: "Sinthan Top",
+    brief:  "Sinthan Top is a popular tourist destination known for 360-degree views and snow even in summer.",
+    image: "/sinthan.jpg",
+    distance: "90 km from Srinagar",
+    bestTime: "May - Sep",
+    weather: "10°C - 22°C",
+    color: "bg-teal-50 text-teal-900 border-teal-100",
+    famousFor: ["360 Degree Views", "Year-round Snow", "Driving Adventure", "Daksum Valley"],
       activities: ["Snow Play", "Photography", "Drive through the Pass", "Trekking"],
-      image: "/sinthan.jpg"
-    }
+}
   ];

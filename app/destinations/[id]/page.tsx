@@ -1,9 +1,9 @@
 import React from 'react';
-import { destinations } from '../../../data/destinations';
-import { MapPin, Camera, ArrowLeft, Calendar, Mountain, Car, Sun, CloudSnow, Wind, Compass, CheckCircle } from 'lucide-react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import DestinationImage from '../../../components/DestinationImage';
+import Link from 'next/link';
+import { MapPin, Camera, ArrowLeft, Calendar, Mountain, Car, Sun, CloudSnow, Wind, Compass, CheckCircle } from 'lucide-react';
+// --- FIX: Import from Central Data ---
+import { destinations } from '@/data/destinations';
 
 export async function generateStaticParams() {
   return destinations.map((dest) => ({
@@ -13,6 +13,8 @@ export async function generateStaticParams() {
 
 export default async function DestinationDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  
+  // Find the destination from the central file
   const place = destinations.find((d) => d.id === id);
 
   if (!place) return notFound();
@@ -20,19 +22,18 @@ export default async function DestinationDetail({ params }: { params: Promise<{ 
   return (
     <main className="min-h-screen bg-white font-sans">
       
-      {/* --- 1. HERO SECTION (Fixed Overlap) --- */}
+      {/* --- 1. HERO SECTION --- */}
       <div className="relative h-[90vh] w-full bg-slate-900 overflow-hidden">
-        <DestinationImage 
+        <img 
           src={place.image} 
           alt={place.name} 
           className="w-full h-full object-cover opacity-90 animate-slow-zoom"
         />
         
-        {/* Gradient Overlay for Text Readability */}
+        {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40" />
 
-        {/* Content Container - Split Top/Bottom to avoid Header Overlap */}
-        {/* Added pt-32 to push the Top content down below the Navbar */}
+        {/* Content Container */}
         <div className="absolute inset-0 flex flex-col justify-between px-6 md:px-20 pb-16 pt-32">
             
             {/* Top: Back Button */}
@@ -105,7 +106,7 @@ export default async function DestinationDetail({ params }: { params: Promise<{ 
                             <Mountain className="text-[#D97706] shrink-0" size={24} />
                             <div>
                                 <p className="text-white/60 text-xs uppercase tracking-wider font-bold">Altitude</p>
-                                <p className="text-xl font-bold">2,730 m</p>
+                                <p className="text-xl font-bold">{place.elevation}</p>
                                 <p className="text-white/40 text-xs">Above Sea Level</p>
                             </div>
                         </div>
@@ -155,7 +156,7 @@ export default async function DestinationDetail({ params }: { params: Promise<{ 
                         <Sun size={28} />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">Summer (Apr - Jun)</h3>
-                    <p className="text-gray-500 text-sm mb-4">Pleasant weather (15°C to 30°C). Perfect for sightseeing, trekking, and Shikara rides.</p>
+                    <p className="text-gray-500 text-sm mb-4">Pleasant weather (15°C to 30°C). Perfect for sightseeing, trekking, and outdoors.</p>
                     <span className="inline-block px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full">Peak Season</span>
                 </div>
 
@@ -198,8 +199,8 @@ export default async function DestinationDetail({ params }: { params: Promise<{ 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {place.activities.map((activity, idx) => (
                 <div key={idx} className="group relative h-64 rounded-2xl overflow-hidden cursor-pointer shadow-lg">
-                    {/* Background (Blurred version of main image for variety) */}
-                    <DestinationImage 
+                    {/* Background Image */}
+                    <img 
                         src={place.image} 
                         alt={activity} 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -226,13 +227,13 @@ export default async function DestinationDetail({ params }: { params: Promise<{ 
              </h2>
              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[600px]">
                 <div className="md:col-span-2 md:row-span-2 rounded-2xl overflow-hidden relative group">
-                     <DestinationImage src={place.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" alt="View 1" />
+                     <img src={place.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" alt="View 1" />
                 </div>
                 <div className="rounded-2xl overflow-hidden relative group">
-                     <DestinationImage src={place.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 grayscale group-hover:grayscale-0" alt="View 2" />
+                     <img src={place.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 grayscale group-hover:grayscale-0" alt="View 2" />
                 </div>
                 <div className="rounded-2xl overflow-hidden relative group">
-                     <DestinationImage src={place.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 grayscale group-hover:grayscale-0" alt="View 3" />
+                     <img src={place.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 grayscale group-hover:grayscale-0" alt="View 3" />
                 </div>
              </div>
         </div>

@@ -3,100 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Calendar, ArrowRight, Mountain, Navigation, Camera, Compass } from 'lucide-react';
-
-const destinations = [
-  {
-    id: 'srinagar',
-    name: "Srinagar",
-    tagline: "The Venice of the East",
-    description: "Drift through the silent waters of Dal Lake on a Shikara, surrounded by the Zabarwan mountains. A city where Mughal gardens bloom and heritage floats.",
-    image: "/srinagar.jpg", 
-    elevation: "1,585m",
-    distance: "0 km (Base)",
-    bestTime: "Apr - Oct",
-    activities: ["Shikara Ride", "Houseboat Stay", "Mughal Gardens", "Old City Walk"],
-    weather: "15°C - 30°C",
-    color: "bg-blue-50 text-blue-900 border-blue-100"
-  },
-  {
-    id: 'gulmarg',
-    name: "Gulmarg",
-    tagline: "The Meadow of Flowers",
-    description: "Ride the world's second-highest gondola to Mt. Apharwat. In winter, it's a white wonderland for skiing; in summer, a lush green paradise.",
-    image: "/gulmarg.jpg",
-    elevation: "2,650m",
-    distance: "51 km from Srinagar",
-    bestTime: "Dec - Mar (Snow)",
-    activities: ["Gondola Ride", "Skiing", "Golfing", "ATV Ride"],
-    weather: "-4°C - 15°C",
-    color: "bg-emerald-50 text-emerald-900 border-emerald-100"
-  },
-  {
-    id: 'pahalgam',
-    name: "Pahalgam",
-    tagline: "Valley of Shepherds",
-    description: "The sound of the Lidder River follows you everywhere. Famous for its pine forests, Betaab Valley, and as the starting point for Amarnath Yatra.",
-    image: "/pahalgam.jpg",
-    elevation: "2,740m",
-    distance: "90 km from Srinagar",
-    bestTime: "Mar - Nov",
-    activities: ["Betaab Valley", "River Rafting", "Pony Ride", "Aru Valley"],
-    weather: "10°C - 25°C",
-    color: "bg-orange-50 text-orange-900 border-orange-100"
-  },
-  {
-    id: 'sonamarg',
-    name: "Sonamarg",
-    tagline: "The Meadow of Gold",
-    description: "A gateway to the ancient Silk Road. Rugged mountains, glaciers that touch the road, and the mighty Sindh river make it a trekker's dream.",
-    image: "/sonamarg.jpg",
-    elevation: "2,800m",
-    distance: "80 km from Srinagar",
-    bestTime: "Apr - Oct",
-    activities: ["Thajiwas Glacier", "Sledging", "Zero Point", "Camping"],
-    weather: "8°C - 20°C",
-    color: "bg-yellow-50 text-yellow-900 border-yellow-100"
-  },
-  {
-    id: 'gurez',
-    name: "Gurez Valley",
-    tagline: "The Ultimate Offbeat Frontier",
-    description: "Hidden behind the high Razdan Pass, Gurez is a fortress of nature. Famous for the pyramid-shaped Habba Khatoon peak and the pristine Kishanganga river.",
-    image: "/gurez.jpg",
-    elevation: "2,400m",
-    distance: "123 km from Srinagar",
-    bestTime: "May - Sep",
-    activities: ["Camping", "Kishanganga River", "Habba Khatoon", "Stargazing"],
-    weather: "10°C - 20°C",
-    color: "bg-indigo-50 text-indigo-900 border-indigo-100"
-  },
-  {
-    id: 'yusmarg',
-    name: "Yusmarg",
-    tagline: "The Meadow of Jesus",
-    description: "A quiet, serene meadow surrounded by dense pine forests. Less crowded than Gulmarg, it offers pure tranquility and the beautiful Doodhganga river.",
-    image: "/yusmarg.jpg",
-    elevation: "2,396m",
-    distance: "47 km from Srinagar",
-    bestTime: "May - Sep",
-    activities: ["Doodhganga Trek", "Horse Riding", "Picnic", "Nilnag Lake"],
-    weather: "12°C - 24°C",
-    color: "bg-green-50 text-green-900 border-green-100"
-  },
-  {
-    id: 'doodhpathri',
-    name: "Doodhpathri",
-    tagline: "The Valley of Milk",
-    description: "An untouched bowl-shaped valley where the water crashes against rocks so white it looks like milk. Peaceful, pristine, and crowd-free.",
-    image: "/doodhpathri.jpg",
-    elevation: "2,730m",
-    distance: "42 km from Srinagar",
-    bestTime: "May - Sep",
-    activities: ["Picnic", "Nature Walk", "Stream Crossing", "Relaxation"],
-    weather: "10°C - 22°C",
-    color: "bg-teal-50 text-teal-900 border-teal-100"
-  }
-];
+// --- 1. IMPORT DATA (Connects to your central database) ---
+import { destinations } from '@/data/destinations';
 
 export default function Destinations() {
   return (
@@ -129,7 +37,6 @@ export default function Destinations() {
       </section>
 
       {/* --- 2. DESTINATIONS LIST (Clean Spacing) --- */}
-      {/* REMOVED: -mt-20. ADDED: py-20 to separate it cleanly from the hero */}
       <section className="container mx-auto px-4 py-20 bg-white">
         <div className="space-y-32">
           
@@ -214,11 +121,12 @@ export default function Destinations() {
                 </div>
 
                 <div className="pt-4">
-                   <Link href={`/book-location?location=${place.id}`}>
+                   {/* --- CHANGED LINK: Points to the Details Page now --- */}
+                   <Link href={`/destinations/${place.id}`}>
                      <button className="group relative px-8 py-4 bg-[#1E3A8A] text-white font-bold rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all w-full md:w-auto">
                         <div className="absolute inset-0 w-full h-full bg-[#D97706] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
                         <span className="relative flex items-center justify-center gap-3">
-                           Plan a Trip to {place.name} <ArrowRight size={18} />
+                           Explore {place.name} <ArrowRight size={18} />
                         </span>
                      </button>
                    </Link>
