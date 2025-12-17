@@ -341,7 +341,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                     </div>
 
                     {/* Book Button linking to Form */}
-                    <Link href={`/book?package=${pkg.title}&budget=${pkg.price}&message=I am interested in ${pkg.title}`}>
+                    <Link href={`/book?packages/${pkg.title}`}>
                         <button className="w-full bg-[#D97706] hover:bg-blue-900 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 mb-3">
                             Proceed to Book
                         </button>

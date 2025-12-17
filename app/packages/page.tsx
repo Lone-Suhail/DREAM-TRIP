@@ -265,7 +265,7 @@ export default function PackagesPage() {
                             </div>
                         </div>
 
-                        <Link href={`/package/${pkg.id}`}>
+                        <Link href={`/packages/${pkg.id}`}>
                             <button className="bg-[#1E3A8A] hover:bg-blue-900 text-white p-3.5 rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95">
                                 <ArrowRight size={20} />
                             </button>
