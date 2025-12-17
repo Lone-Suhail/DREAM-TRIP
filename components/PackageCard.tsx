@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Clock, MapPin, Star, ArrowRight, CheckCircle, Users } from 'lucide-react';
 
-// --- DEFINING INTERFACE LOCALLY TO PREVENT ERRORS ---
+// --- DEFINING INTERFACE ---
 export interface Package {
   id: string;
   title: string;
@@ -13,7 +13,7 @@ export interface Package {
   originalPrice?: string;
   rating: number;
   reviews: number;
-  days: string;       // Matches the 'days' property we fixed earlier
+  duration: string;   // <--- CHANGED FROM 'days' TO 'duration' TO MATCH DATA
   location: string;
   tag?: string;
   highlights: string[];
@@ -29,7 +29,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ data }) => {
     <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col h-full">
       
       {/* --- IMAGE SECTION --- */}
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-64 overflow-hidden bg-gray-200">
         <img 
           src={data.image} 
           alt={data.title} 
@@ -42,7 +42,8 @@ const PackageCard: React.FC<PackageCardProps> = ({ data }) => {
         {/* Duration Badge */}
         <div className="absolute top-4 right-4 bg-white/95 backdrop-blur px-3 py-1 rounded-lg shadow-md flex items-center gap-1">
            <Clock size={14} className="text-[#D97706]" />
-           <span className="text-xs font-bold text-[#1E3A8A]">{data.days}</span>
+           {/* Display duration correctly */}
+           <span className="text-xs font-bold text-[#1E3A8A]">{data.duration}</span>
         </div>
 
         {/* Tag Badge */}
@@ -104,11 +105,14 @@ const PackageCard: React.FC<PackageCardProps> = ({ data }) => {
                  </div>
               </div>
 
-              <Link href={`packages/${data.id}`}>
+              {/* --- LINK FIXED HERE --- */}
+              <Link href={`/packages/${data.id}`}>
                 <button className="bg-[#1E3A8A] hover:bg-blue-900 text-white p-3 rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 flex items-center justify-center">
                    <ArrowRight size={20} />
                 </button>
               </Link>
+              {/* ----------------------- */}
+
            </div>
         </div>
 
