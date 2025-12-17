@@ -104,7 +104,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ data }) => {
                  </div>
               </div>
 
-              <Link href={`/book?package/${data.id}`}>
+              <Link href={`/book?package=${data.id}`}>
                 <button className="bg-[#1E3A8A] hover:bg-blue-900 text-white p-3 rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 flex items-center justify-center">
                    <ArrowRight size={20} />
                 </button>
