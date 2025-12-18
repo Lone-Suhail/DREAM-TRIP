@@ -36,10 +36,10 @@ export default function PlanMyTrip() {
     const numberOfRooms = Math.ceil(travelers / 2);
     const nights = days - 1;
 
-    const hotelRates = { standard: 2000-4000, deluxe: 4500-6000, luxury: 12000-20000 };
+    const hotelRates = { standard: 2000 - 4000, deluxe: 4500 - 6000, luxury: 12000 - 20000 };
     const baseHotelCost = numberOfRooms * hotelRates[hotelCategory] * nights;
 
-    const transportRates = { sedan: 2000-3500, suv: 4000-5000, tempo: 7000-8000 };
+    const transportRates = { sedan: 2000 - 3500, suv: 4000 - 5000, tempo: 7000 - 8000 };
     let vehiclesNeeded = 1;
     if (vehicleType === 'sedan' && travelers > 4) vehiclesNeeded = Math.ceil(travelers / 4);
     if (vehicleType === 'suv' && travelers > 7) vehiclesNeeded = Math.ceil(travelers / 7);
