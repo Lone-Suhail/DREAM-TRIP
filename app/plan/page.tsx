@@ -31,37 +31,56 @@ export default function PlanMyTrip() {
   const [minPerPerson, setMinPerPerson] = useState(0);
   const [maxPerPerson, setMaxPerPerson] = useState(0);
 
-  // --- PRICING ENGINE ---
+  /// --- PRICING ENGINE (FIXED) ---
   useEffect(() => {
     const numberOfRooms = Math.ceil(travelers / 2);
-    const nights = days - 1;
+    // Ensure nights is at least 1 to avoid 0 cost
+    const nights = Math.max(1, days - 1); 
 
-    const hotelRates = { standard: 2000 - 4000, deluxe: 4500 - 6000, luxury: 12000 - 20000 };
-    const baseHotelCost = numberOfRooms * hotelRates[hotelCategory] * nights;
+    // 1. DEFINE MIN AND MAX RATES SEPARATELY
+    const hotelRates = { 
+        standard: { min: 2000, max: 4000 }, 
+        deluxe:   { min: 4500, max: 6000 }, 
+        luxury:   { min: 12000, max: 20000 } 
+    };
 
-    const transportRates = { sedan: 2000 - 3500, suv: 4000 - 5000, tempo: 7000 - 8000 };
+    const transportRates = { 
+        sedan: { min: 2000, max: 3500 }, 
+        suv:   { min: 4000, max: 5000 }, 
+        tempo: { min: 7000, max: 8000 } 
+    };
+
+    // 2. CALCULATE VEHICLES
     let vehiclesNeeded = 1;
     if (vehicleType === 'sedan' && travelers > 4) vehiclesNeeded = Math.ceil(travelers / 4);
     if (vehicleType === 'suv' && travelers > 7) vehiclesNeeded = Math.ceil(travelers / 7);
     if (vehicleType === 'tempo' && travelers > 14) vehiclesNeeded = Math.ceil(travelers / 14);
 
-    const baseTransportCost = (transportRates[vehicleType] * vehiclesNeeded) * days;
+    // 3. CALCULATE MIN TOTAL
+    const minHotel = numberOfRooms * hotelRates[hotelCategory].min * nights;
+    const minTransport = (transportRates[vehicleType].min * vehiclesNeeded) * days;
+    
+    // 4. CALCULATE MAX TOTAL
+    const maxHotel = numberOfRooms * hotelRates[hotelCategory].max * nights;
+    const maxTransport = (transportRates[vehicleType].max * vehiclesNeeded) * days;
 
+    // 5. EXTRAS
     let pickupSurcharge = 0;
     if (pickupLocation === 'jammu_rail') {
       pickupSurcharge = 8000 * vehiclesNeeded; 
     }
 
+    // Buffer (Keep buffer consistent or range it too)
     const baseBuffer = 1200 * travelers; 
-    const calculatedTotal = baseHotelCost + baseTransportCost + pickupSurcharge + baseBuffer;
-    
-    const minTotal = Math.round(calculatedTotal);
-    const maxTotal = Math.round(calculatedTotal * 1.20);
 
-    setMinCost(minTotal);
-    setMaxCost(maxTotal);
-    setMinPerPerson(Math.round(minTotal / travelers));
-    setMaxPerPerson(Math.round(maxTotal / travelers));
+    // 6. FINAL SUMS
+    const calculatedMin = minHotel + minTransport + pickupSurcharge + baseBuffer;
+    const calculatedMax = maxHotel + maxTransport + pickupSurcharge + baseBuffer; // Removed the arbitrary * 1.20 multiplier since we now have real max rates
+
+    setMinCost(calculatedMin);
+    setMaxCost(calculatedMax);
+    setMinPerPerson(Math.round(calculatedMin / travelers));
+    setMaxPerPerson(Math.round(calculatedMax / travelers));
 
   }, [travelers, days, hotelCategory, vehicleType, pickupLocation]);
 
@@ -314,11 +333,22 @@ export default function PlanMyTrip() {
               </div>
 
               {/* --- LINK FIXED: NO PRE-FILLED BUDGET OR MESSAGE --- */}
-              <Link href={`/book?travelers=${travelers}&date=${startDate}`}>
-                <button className="w-full bg-[#D97706] hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
-                  Check Exact Price <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
-                </button>
-              </Link>
+              <Link href={startDate ? `/book?travelers=${travelers}&date=${startDate}` : '#'}
+              onClick={(e) => 
+                {
+              if (!startDate) 
+                {
+              e.preventDefault();
+              alert("Please select a travel date first.");
+                 }
+                } }
+              >
+              <button className={`w-full py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all font-bold text-white
+             ${startDate ? 'bg-[#D97706] hover:bg-amber-600 hover:shadow-xl group' : 'bg-gray-400 cursor-not-allowed'}`}
+             >
+               Check Exact Price <ArrowRight size={18} className={startDate ? "group-hover:translate-x-1 transition-transform" : ""} />
+              </button>
+             </Link>
               {/* --------------------------------------------------- */}
 
             </div>
