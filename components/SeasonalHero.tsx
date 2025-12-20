@@ -4,7 +4,7 @@ import React from 'react';
 import { seasonConfig, SeasonType } from '@/data/seasons';
 import Link from 'next/link';
 import { ChevronDown, Wand2, CloudSnow, Sun, CloudRain, Wind } from 'lucide-react';
-import { useSeason } from '@/data/SeasonContext'; // <--- Ensure this path matches where you moved the file
+import { useSeason } from '@/data/SeasonContext'; // ✅ Correct path to data folder
 
 export default function SeasonalHero() {
   const { season, setSeason } = useSeason();
@@ -32,26 +32,30 @@ export default function SeasonalHero() {
         />
       </div>
 
-      {/* 2. SEASON SELECTOR (FIXED: HORIZONTAL & CENTERED) */}
-      <div className="absolute top-24 left-0 w-full z-30 flex flex-row flex-wrap justify-center gap-2 px-2">
-        <div className="flex flex-row gap-2 bg-white/10 backdrop-blur-md p-1.5 rounded-full border border-white/20">
+      {/* 2. SEASON SELECTOR (FIXED: VERTICAL MOBILE / HORIZONTAL DESKTOP) */}
+      <div className="absolute top-24 right-4 z-30 flex flex-col md:flex-row items-end gap-2">
+        {/* Container for the buttons */}
+        <div className="flex flex-col md:flex-row gap-2 bg-white/5 backdrop-blur-sm p-2 rounded-2xl border border-white/10">
           {(Object.keys(seasonConfig) as SeasonType[]).map((s) => (
             <button
               key={s}
               onClick={() => setSeason(s)}
-              className={`px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all ${
+              className={`px-3 py-2 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-2 transition-all w-full md:w-auto ${
                 season === s 
-                  ? 'bg-white text-[#D97706] shadow-lg scale-105' 
+                  ? 'bg-white text-[#D97706] shadow-lg translate-x-0' 
                   : 'text-white/80 hover:bg-white/10'
               }`}
             >
-              {getIcon(s)} <span className="hidden sm:inline">{s}</span> <span className="sm:hidden">{s.slice(0,3)}</span>
+              {/* Show text first, icon last on mobile for better "Right Align" feel */}
+              <span className="hidden md:inline">{s}</span> 
+              <span className="md:hidden">{s.slice(0,3)}</span>
+              {getIcon(s)} 
             </button>
           ))}
         </div>
       </div>
 
-      {/* 3. CONTENT */}
+      {/* 3. CENTERED CONTENT */}
       <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-32 flex flex-col items-center">
         
         {/* Badge */}
@@ -75,6 +79,7 @@ export default function SeasonalHero() {
           Forget the maps. We take you to the hidden valleys, the silent lakes, and the snow-draped peaks that only locals know.
         </p>
 
+        {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full animate-fade-in-up delay-300">
           <Link href="/packages">
             <button className="w-full sm:w-auto px-8 py-4 bg-[#D97706] hover:bg-amber-600 text-white font-bold rounded-full transition-all shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2 text-base cursor-pointer">
