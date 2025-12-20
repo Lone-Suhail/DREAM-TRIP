@@ -1,20 +1,25 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Star, ArrowRight, CheckCircle, Clock, Tag } from 'lucide-react';
-// --- FIX: Import from Central Data ---
 import { packages } from '@/data/packages';
+import { seasonConfig, getSeasonByMonth } from '@/data/seasons';
 
 export default function FeaturedPackages() {
-  // Take the first 4 packages to display on the Home Page
   const featured = packages.slice(0, 4);
+
+  const [multiplier, setMultiplier] = useState(1);
+
+  useEffect(() => {
+    const currentSeason = getSeasonByMonth();
+    setMultiplier(seasonConfig[currentSeason].priceMultiplier);
+  }, []);
 
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         
-        {/* Header */}
         <div className="text-center mb-16">
           <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">Best Selling Tours</span>
           <h2 className="text-4xl font-serif font-bold text-[#1E3A8A] mt-2">Popular Packages</h2>
@@ -23,83 +28,89 @@ export default function FeaturedPackages() {
           </p>
         </div>
 
-        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {featured.map((pkg) => (
-            <div key={pkg.id} className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 flex flex-col">
+          {featured.map((pkg) => {
+            
+            // --- FIX START: CLEAN THE PRICE BEFORE MATH ---
+            // 1. Convert to string (safety)
+            // 2. Remove commas (e.g., "12,500" -> "12500")
+            // 3. Parse to Integer
+            const rawPrice = typeof pkg.price === 'string' 
+              ? parseInt(pkg.price.replace(/,/g, ''), 10) 
+              : pkg.price;
               
-              {/* Image */}
-              <div className="relative h-64 overflow-hidden">
-                <img 
-                  src={pkg.image} 
-                  alt={pkg.title} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            const dynamicPrice = Math.round(rawPrice * multiplier).toLocaleString('en-IN');
+            // --- FIX END ---
+            
+            return (
+              <div key={pkg.id} className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 flex flex-col">
                 
-                {/* Days Badge */}
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#1E3A8A] shadow-md uppercase tracking-wide flex items-center gap-1">
-                   <Clock size={12} className="text-[#D97706]" /> {pkg.duration}
-                </div>
-
-                {/* Tag Badge */}
-                {pkg.tag && (
-                  <div className="absolute top-4 left-4 bg-[#D97706] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md uppercase tracking-wide flex items-center gap-1">
-                    <Tag size={12} /> {pkg.tag}
+                <div className="relative h-64 overflow-hidden">
+                  <img 
+                    src={pkg.image} 
+                    alt={pkg.title} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#1E3A8A] shadow-md uppercase tracking-wide flex items-center gap-1">
+                     <Clock size={12} className="text-[#D97706]" /> {pkg.duration}
                   </div>
-                )}
 
-                <div className="absolute bottom-4 left-4 text-white">
-                   <div className="flex items-center gap-1 text-yellow-400 text-sm mb-1">
-                      <Star size={14} fill="currentColor" /> 
-                      <span className="font-bold">{pkg.rating}</span>
-                      <span className="text-gray-200 text-xs">({pkg.reviews} reviews)</span>
-                   </div>
+                  {pkg.tag && (
+                    <div className="absolute top-4 left-4 bg-[#D97706] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md uppercase tracking-wide flex items-center gap-1">
+                      <Tag size={12} /> {pkg.tag}
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-4 left-4 text-white">
+                     <div className="flex items-center gap-1 text-yellow-400 text-sm mb-1">
+                       <Star size={14} fill="currentColor" /> 
+                       <span className="font-bold">{pkg.rating}</span>
+                       <span className="text-gray-200 text-xs">({pkg.reviews} reviews)</span>
+                     </div>
+                  </div>
                 </div>
+
+                <div className="p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold text-[#1E3A8A] mb-2 leading-tight group-hover:text-[#D97706] transition-colors">
+                    {pkg.title}
+                  </h3>
+                  
+                  <div className="space-y-2 mb-6 flex-grow">
+                     {pkg.highlights.slice(0, 3).map((feat, i) => (
+                       <div key={i} className="flex items-center gap-2 text-sm text-gray-500">
+                          <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                       </div>
+                     ))}
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
+                     <div>
+                       <p className="text-xs text-gray-400 uppercase">Starting From</p>
+                       <div className="flex items-baseline gap-1">
+                         <span className="text-sm font-bold text-[#D97706]">₹</span>
+                         <p className="text-xl font-bold text-[#1E3A8A]">{dynamicPrice}</p>
+                       </div>
+                     </div>
+                     
+                     <Link href={`/packages/${pkg.id}`}>
+                       <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[#D97706] hover:text-white transition-all">
+                          <ArrowRight size={18} />
+                       </button>
+                     </Link>
+                  </div>
+                </div>
+
               </div>
-
-              {/* Content */}
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="text-xl font-bold text-[#1E3A8A] mb-2 leading-tight group-hover:text-[#D97706] transition-colors">
-                  {pkg.title}
-                </h3>
-                
-                {/* Highlights (Using central data 'highlights') */}
-                <div className="space-y-2 mb-6 flex-grow">
-                   {pkg.highlights.slice(0, 3).map((feat, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-gray-500">
-                         <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
-                      </div>
-                   ))}
-                </div>
-
-                <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
-                   <div>
-                      <p className="text-xs text-gray-400 uppercase">Starting From</p>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-sm font-bold text-[#D97706]">₹</span>
-                        <p className="text-xl font-bold text-[#1E3A8A]">{pkg.price}</p>
-                      </div>
-                   </div>
-                   
-                   {/* --- LINK FIXED: Points to /packages/101 --- */}
-                   <Link href={`/packages/${pkg.id}`}>
-                      <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[#D97706] hover:text-white transition-all">
-                         <ArrowRight size={18} />
-                      </button>
-                   </Link>
-                </div>
-              </div>
-
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* View All Button */}
         <div className="text-center mt-12">
            <Link href="/packages">
              <button className="px-8 py-3 border-2 border-[#1E3A8A] text-[#1E3A8A] font-bold rounded-full hover:bg-[#1E3A8A] hover:text-white transition-all">
-                View All Packages
+               View All Packages
              </button>
            </Link>
         </div>

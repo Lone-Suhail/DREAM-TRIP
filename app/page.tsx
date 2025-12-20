@@ -1,7 +1,11 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, MapPin, Coffee, Snowflake, Ship, ChevronDown, Wand2, Quote, ShieldCheck, Clock, Heart } from 'lucide-react';
 import { packages } from '../data/packages';
+import SeasonalHero from '@/components/SeasonalHero';
+import { seasonConfig, getSeasonByMonth } from '@/data/seasons'; // <--- ADD THIS
 
 // --- TESTIMONIALS DATA ---
 const reviews = [
@@ -20,46 +24,21 @@ const allReviews = [...reviews, ...reviews];
 
 export default function Home() {
   const featuredPackages = packages.slice(0, 3);
+  
+  // --- ADD THIS LOGIC ---
+  const [multiplier, setMultiplier] = useState(1); // Default is 1 (Standard price)
+
+  useEffect(() => {
+    const currentSeason = getSeasonByMonth();
+    setMultiplier(seasonConfig[currentSeason].priceMultiplier);
+  }, []);
 
   return (
     <main className="min-h-screen bg-white font-sans selection:bg-[#D97706] selection:text-white">
 
-      {/* --- 1. HERO SECTION --- */}
-      <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pb-20">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/50 z-10"></div>
-          <img src="/srinagar.jpg" alt="Kashmir Paradise" className="w-full h-full object-cover animate-slow-zoom" />
-        </div>
-
-        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-32 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium mb-6 animate-fade-in-up">
-            <span className="w-2 h-2 rounded-full bg-[#D97706] animate-pulse"></span>
-            #1 Travel Agency in Kashmir
-          </div>
-          <h1 className="text-4xl md:text-6xl font-serif font-bold text-white mb-6 leading-tight drop-shadow-2xl tracking-tight animate-fade-in-up delay-100">
-            Heaven is closer <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D97706] via-yellow-200 to-[#D97706]">than you think.</span>
-          </h1>
-          <p className="text-base md:text-lg text-gray-100 mb-10 max-w-xl mx-auto leading-relaxed font-light drop-shadow-md animate-fade-in-up delay-200">
-            Forget the maps. We take you to the hidden valleys, the silent lakes, and the snow-draped peaks that only locals know.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full animate-fade-in-up delay-300">
-            <Link href="/packages">
-              <button className="w-full sm:w-auto px-8 py-4 bg-[#D97706] hover:bg-amber-600 text-white font-bold rounded-full transition-all shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2 text-base cursor-pointer">
-                View Packages
-              </button>
-            </Link>
-            <Link href="/plan">
-              <button className="w-full sm:w-auto px-8 py-4 bg-white text-[#1E3A8A] hover:bg-gray-100 font-bold rounded-full transition-all shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2 text-base cursor-pointer">
-                <Wand2 size={18} className="text-[#D97706]" /> Build Your Own Trip
-              </button>
-            </Link>
-          </div>
-        </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white animate-bounce z-20 hidden md:block">
-          <ChevronDown size={28} className="opacity-70" />
-        </div>
-      </section>
+     {/* --- 1. SEASONAL HERO SECTION (NEW) --- */}
+      {/* We replaced the old code with this single line below 👇 */}
+      <SeasonalHero />
 
       {/* --- 2. THE EXPERIENCE BENTO GRID --- */}
       <section className="py-24 bg-gray-50 relative z-30">
