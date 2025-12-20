@@ -32,11 +32,11 @@ export default function SeasonalHero() {
         />
       </div>
 
-      {/* 2. SEASON SELECTOR (The "Gap" Filler) */}
+      {/* 2. SEASON SELECTOR */}
       <div className="absolute z-30 w-full flex justify-center px-2
-        /* Mobile: Fixed at top-24 (Between Header and Text) */
-        top-24 
-        /* Desktop: Move to Right Side */
+        /* Mobile: top-28 (Lower than 24, but fits above text) */
+        top-28
+        /* Desktop: Standard Right Side */
         md:top-24 md:justify-end md:right-4 md:w-auto md:px-0"
       >
         <div className="flex flex-row gap-1 bg-white/10 backdrop-blur-md p-1 rounded-full border border-white/20 shadow-xl">
@@ -50,7 +50,6 @@ export default function SeasonalHero() {
                   : 'text-white/80 hover:bg-white/10'
               }`}
             >
-              {/* Icon first, then Full Name */}
               {getIcon(s)} 
               <span>{s}</span> 
             </button>
@@ -59,8 +58,8 @@ export default function SeasonalHero() {
       </div>
 
       {/* 3. CENTERED CONTENT */}
-      {/* pt-40 ensures the text starts LOWER, leaving space for the buttons above */}
-      <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-40 md:pt-32 flex flex-col items-center">
+      {/* REVERTED TO pt-32: Text stays high up, as requested */}
+      <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-32 flex flex-col items-center">
         
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium mb-6 animate-fade-in-up">
