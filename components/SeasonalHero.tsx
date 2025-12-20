@@ -4,7 +4,7 @@ import React from 'react';
 import { seasonConfig, SeasonType } from '@/data/seasons';
 import Link from 'next/link';
 import { ChevronDown, Wand2, CloudSnow, Sun, CloudRain, Wind } from 'lucide-react';
-import { useSeason } from '@/data/SeasonContext'; // ✅ Correct path to data folder
+import { useSeason } from '@/data/SeasonContext';
 
 export default function SeasonalHero() {
   const { season, setSeason } = useSeason();
@@ -32,30 +32,34 @@ export default function SeasonalHero() {
         />
       </div>
 
-      {/* 2. SEASON SELECTOR (FIXED: VERTICAL MOBILE / HORIZONTAL DESKTOP) */}
-      <div className="absolute top-24 right-4 z-30 flex flex-col md:flex-row items-end gap-2">
-        {/* Container for the buttons */}
-        <div className="flex flex-col md:flex-row gap-2 bg-white/5 backdrop-blur-sm p-2 rounded-2xl border border-white/10">
+      {/* 2. SEASON SELECTOR (FIXED: One Line, Centered Above Text on Mobile) */}
+      <div className="absolute z-30 w-full flex justify-center px-4
+        /* Mobile: Top-20 (In the gap above text) */
+        top-20 
+        /* Desktop: Move to Right Side */
+        md:top-24 md:justify-end md:right-4 md:w-auto md:px-0"
+      >
+        <div className="flex flex-row gap-1 bg-white/10 backdrop-blur-md p-1 rounded-full border border-white/20 shadow-xl">
           {(Object.keys(seasonConfig) as SeasonType[]).map((s) => (
             <button
               key={s}
               onClick={() => setSeason(s)}
-              className={`px-3 py-2 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider flex items-center justify-end gap-2 transition-all w-full md:w-auto ${
+              className={`px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
                 season === s 
-                  ? 'bg-white text-[#D97706] shadow-lg translate-x-0' 
+                  ? 'bg-white text-[#D97706] shadow-sm scale-105' 
                   : 'text-white/80 hover:bg-white/10'
               }`}
             >
-              {/* Show text first, icon last on mobile for better "Right Align" feel */}
-              <span className="hidden md:inline">{s}</span> 
-              <span className="md:hidden">{s.slice(0,3)}</span>
+              {/* Icon first, then Full Name */}
               {getIcon(s)} 
+              <span>{s}</span> 
             </button>
           ))}
         </div>
       </div>
 
       {/* 3. CENTERED CONTENT */}
+      {/* pt-32 ensures there is space above this text for the buttons */}
       <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-32 flex flex-col items-center">
         
         {/* Badge */}
