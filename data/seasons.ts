@@ -1,5 +1,3 @@
-// app/data/seasons.ts
-
 export type SeasonType = 'winter' | 'spring' | 'summer' | 'autumn';
 
 export interface SeasonConfig {
@@ -15,34 +13,38 @@ export const seasonConfig: Record<SeasonType, SeasonConfig> = {
   winter: {
     name: 'Winter Wonderland',
     months: 'Dec - Feb',
-    heroImage: '/images/hero-winter-gulmarg.jpg', // Make sure this image exists in public/images/
+    // ✅ FIX: Using a direct web link instead of a local file
+    heroImage: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=80&w=1920&auto=format&fit=crop',
     tagline: 'Experience the Magic of Snow in Kashmir',
-    accentColor: '#0ea5e9', // Ice Blue
-    priceMultiplier: 1.2, // 20% Higher (Heating costs)
+    accentColor: '#0ea5e9',
+    priceMultiplier: 1.2,
   },
   spring: {
     name: 'Tulip Season',
     months: 'Mar - Apr',
-    heroImage: '/images/hero-tulip-garden.jpg',
+    // ✅ FIX: Using a direct web link
+    heroImage: 'https://images.unsplash.com/photo-1560113888-963d72659104?q=80&w=1920&auto=format&fit=crop',
     tagline: 'Colors of Kashmir: Tulips & Blossoms',
-    accentColor: '#ec4899', // Pink
-    priceMultiplier: 1.0, // Standard Rate
+    accentColor: '#ec4899',
+    priceMultiplier: 1.0,
   },
   summer: {
     name: 'Sunny Kashmir',
     months: 'May - Aug',
-    heroImage: '/images/hero-pahalgam-green.jpg',
+    // ✅ FIX: Using a direct web link
+    heroImage: 'https://images.unsplash.com/photo-1595843477820-205933060596?q=80&w=1920&auto=format&fit=crop',
     tagline: 'Escape the Heat: Green Meadows Await',
-    accentColor: '#16a34a', // Green
-    priceMultiplier: 1.3, // Peak Season
+    accentColor: '#16a34a',
+    priceMultiplier: 1.3,
   },
   autumn: {
     name: 'Golden Autumn',
     months: 'Sep - Nov',
-    heroImage: '/images/hero-chinar-gold.jpg',
+    // ✅ FIX: Using a direct web link
+    heroImage: 'https://images.unsplash.com/photo-1573489868770-07e335752940?q=80&w=1920&auto=format&fit=crop',
     tagline: 'Walk Through Gold: The Chinar Season',
-    accentColor: '#d97706', // Gold/Orange
-    priceMultiplier: 0.9, // Off-season (Cheaper)
+    accentColor: '#d97706',
+    priceMultiplier: 0.9,
   }
 };
 
