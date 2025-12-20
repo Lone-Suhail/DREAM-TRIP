@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import ScrollToTop from "@/components/ScrollToTop";
 import { GoogleAnalytics } from '@next/third-parties/google';
-import { SeasonProvider } from '../data/SeasonContext'; // <--- NEW IMPORT
+import { SeasonProvider } from '@/data/SeasonContext'; // <--- NEW IMPORT
 
 const playfair = Playfair_Display({ 
   subsets: ["latin"],

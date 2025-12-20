@@ -4,58 +4,54 @@ import React from 'react';
 import { seasonConfig, SeasonType } from '@/data/seasons';
 import Link from 'next/link';
 import { ChevronDown, Wand2, CloudSnow, Sun, CloudRain, Wind } from 'lucide-react';
-// Change line 7 to this:
-import { useSeason } from '@/data/SeasonContext';// <--- 1. Import Global Context
+import { useSeason } from '@/data/SeasonContext'; // <--- Ensure this path matches where you moved the file
 
 export default function SeasonalHero() {
-  // --- 2. USE GLOBAL STATE INSTEAD OF LOCAL STATE ---
-  const { season, setSeason } = useSeason(); 
-  
+  const { season, setSeason } = useSeason();
   const config = seasonConfig[season];
 
-  // Helper for icons in the selector
   const getIcon = (s: SeasonType) => {
     switch(s) {
-      case 'winter': return <CloudSnow size={14} />;
-      case 'summer': return <Sun size={14} />;
-      case 'spring': return <Wind size={14} />;
-      case 'autumn': return <CloudRain size={14} />;
+      case 'winter': return <CloudSnow size={12} />;
+      case 'summer': return <Sun size={12} />;
+      case 'spring': return <Wind size={12} />;
+      case 'autumn': return <CloudRain size={12} />;
     }
   };
 
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pb-20">
       
-      {/* --- 1. DYNAMIC BACKGROUND IMAGE --- */}
+      {/* 1. BACKGROUND IMAGE */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black/50 z-10"></div>
-        
-        {/* The Image that changes based on Season */}
         <div 
-          key={season} // Key ensures animation restarts
+          key={season}
           className="w-full h-full bg-cover bg-center animate-slow-zoom transition-all duration-1000"
           style={{ backgroundImage: `url(${config.heroImage})` }}
         />
       </div>
 
-      {/* --- 2. SEASON SELECTOR (Now updates Global State) --- */}
-      <div className="absolute top-24 right-4 z-30 flex flex-col gap-2 md:flex-row bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/20">
-        {(Object.keys(seasonConfig) as SeasonType[]).map((s) => ( // Renamed variable to 's'
-          <button
-            key={s}
-            onClick={() => setSeason(s)} // Updates the whole app!
-            className={`px-3 py-1.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-              season === s 
-                ? 'bg-white text-[#D97706] shadow-lg scale-105' 
-                : 'text-white/80 hover:bg-white/10'
-            }`}
-          >
-            {getIcon(s)} {s}
-          </button>
-        ))}
+      {/* 2. SEASON SELECTOR (FIXED: HORIZONTAL & CENTERED) */}
+      <div className="absolute top-24 left-0 w-full z-30 flex flex-row flex-wrap justify-center gap-2 px-2">
+        <div className="flex flex-row gap-2 bg-white/10 backdrop-blur-md p-1.5 rounded-full border border-white/20">
+          {(Object.keys(seasonConfig) as SeasonType[]).map((s) => (
+            <button
+              key={s}
+              onClick={() => setSeason(s)}
+              className={`px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all ${
+                season === s 
+                  ? 'bg-white text-[#D97706] shadow-lg scale-105' 
+                  : 'text-white/80 hover:bg-white/10'
+              }`}
+            >
+              {getIcon(s)} <span className="hidden sm:inline">{s}</span> <span className="sm:hidden">{s.slice(0,3)}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* --- 3. CENTERED CONTENT --- */}
+      {/* 3. CONTENT */}
       <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-32 flex flex-col items-center">
         
         {/* Badge */}
@@ -75,12 +71,10 @@ export default function SeasonalHero() {
           </span>
         </h1>
 
-        {/* Subtext */}
         <p className="text-base md:text-lg text-gray-100 mb-10 max-w-xl mx-auto leading-relaxed font-light drop-shadow-md animate-fade-in-up delay-200">
           Forget the maps. We take you to the hidden valleys, the silent lakes, and the snow-draped peaks that only locals know.
         </p>
 
-        {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full animate-fade-in-up delay-300">
           <Link href="/packages">
             <button className="w-full sm:w-auto px-8 py-4 bg-[#D97706] hover:bg-amber-600 text-white font-bold rounded-full transition-all shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2 text-base cursor-pointer">
@@ -95,7 +89,6 @@ export default function SeasonalHero() {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white animate-bounce z-20 hidden md:block">
         <ChevronDown size={28} className="opacity-70" />
       </div>
