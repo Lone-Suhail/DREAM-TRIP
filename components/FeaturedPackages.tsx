@@ -1,20 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react'; // Removed useState/useEffect (not needed anymore)
 import Link from 'next/link';
 import { Star, ArrowRight, CheckCircle, Clock, Tag } from 'lucide-react';
 import { packages } from '@/data/packages';
-import { seasonConfig, getSeasonByMonth } from '@/data/seasons';
+import { seasonConfig } from '@/data/seasons';
+// Change the import line to this:
+import { useSeason } from '@/data/SeasonContext'; // <--- 1. IMPORT GLOBAL CONTEXT
 
 export default function FeaturedPackages() {
   const featured = packages.slice(0, 4);
 
-  const [multiplier, setMultiplier] = useState(1);
-
-  useEffect(() => {
-    const currentSeason = getSeasonByMonth();
-    setMultiplier(seasonConfig[currentSeason].priceMultiplier);
-  }, []);
+  // --- 2. GET GLOBAL SEASON & MULTIPLIER ---
+  const { season } = useSeason(); 
+  const multiplier = seasonConfig[season].priceMultiplier; 
+  // -----------------------------------------
 
   return (
     <section className="py-20 bg-gray-50">
@@ -31,16 +31,13 @@ export default function FeaturedPackages() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {featured.map((pkg) => {
             
-            // --- FIX START: CLEAN THE PRICE BEFORE MATH ---
-            // 1. Convert to string (safety)
-            // 2. Remove commas (e.g., "12,500" -> "12500")
-            // 3. Parse to Integer
+            // --- CLEAN PRICE & CALCULATE WITH GLOBAL MULTIPLIER ---
             const rawPrice = typeof pkg.price === 'string' 
               ? parseInt(pkg.price.replace(/,/g, ''), 10) 
               : pkg.price;
               
             const dynamicPrice = Math.round(rawPrice * multiplier).toLocaleString('en-IN');
-            // --- FIX END ---
+            // -----------------------------------------------------
             
             return (
               <div key={pkg.id} className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 flex flex-col">

@@ -1,24 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { seasonConfig, getSeasonByMonth, SeasonType } from '@/data/seasons';
+import React from 'react';
+import { seasonConfig, SeasonType } from '@/data/seasons';
 import Link from 'next/link';
 import { ChevronDown, Wand2, CloudSnow, Sun, CloudRain, Wind } from 'lucide-react';
+// Change line 7 to this:
+import { useSeason } from '@/data/SeasonContext';// <--- 1. Import Global Context
 
 export default function SeasonalHero() {
-  const [currentSeason, setCurrentSeason] = useState<SeasonType>('winter');
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setCurrentSeason(getSeasonByMonth());
-    setIsLoaded(true);
-  }, []);
-
-  const config = seasonConfig[currentSeason];
+  // --- 2. USE GLOBAL STATE INSTEAD OF LOCAL STATE ---
+  const { season, setSeason } = useSeason(); 
+  
+  const config = seasonConfig[season];
 
   // Helper for icons in the selector
-  const getIcon = (season: SeasonType) => {
-    switch(season) {
+  const getIcon = (s: SeasonType) => {
+    switch(s) {
       case 'winter': return <CloudSnow size={14} />;
       case 'summer': return <Sun size={14} />;
       case 'spring': return <Wind size={14} />;
@@ -26,54 +23,51 @@ export default function SeasonalHero() {
     }
   };
 
-  if (!isLoaded) return <div className="min-h-screen bg-gray-900" />;
-
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pb-20">
       
       {/* --- 1. DYNAMIC BACKGROUND IMAGE --- */}
       <div className="absolute inset-0 z-0">
-        {/* Dark Overlay (Kept your bg-black/50) */}
         <div className="absolute inset-0 bg-black/50 z-10"></div>
         
         {/* The Image that changes based on Season */}
         <div 
-          key={currentSeason} // Key ensures the animation restarts when season changes
+          key={season} // Key ensures animation restarts
           className="w-full h-full bg-cover bg-center animate-slow-zoom transition-all duration-1000"
           style={{ backgroundImage: `url(${config.heroImage})` }}
         />
       </div>
 
-      {/* --- 2. SEASON SELECTOR (Keep this so users can switch!) --- */}
+      {/* --- 2. SEASON SELECTOR (Now updates Global State) --- */}
       <div className="absolute top-24 right-4 z-30 flex flex-col gap-2 md:flex-row bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/20">
-        {(Object.keys(seasonConfig) as SeasonType[]).map((season) => (
+        {(Object.keys(seasonConfig) as SeasonType[]).map((s) => ( // Renamed variable to 's'
           <button
-            key={season}
-            onClick={() => setCurrentSeason(season)}
+            key={s}
+            onClick={() => setSeason(s)} // Updates the whole app!
             className={`px-3 py-1.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-              currentSeason === season 
+              season === s 
                 ? 'bg-white text-[#D97706] shadow-lg scale-105' 
                 : 'text-white/80 hover:bg-white/10'
             }`}
           >
-            {getIcon(season)} {season}
+            {getIcon(s)} {s}
           </button>
         ))}
       </div>
 
-      {/* --- 3. YOUR EXACT CONTENT DESIGN --- */}
+      {/* --- 3. CENTERED CONTENT --- */}
       <div className="relative z-20 text-center px-4 max-w-4xl mx-auto pt-32 flex flex-col items-center">
         
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium mb-6 animate-fade-in-up">
           <span 
             className="w-2 h-2 rounded-full animate-pulse"
-            style={{ backgroundColor: config.accentColor }} // Small dynamic touch: dot color changes with season
+            style={{ backgroundColor: config.accentColor }} 
           ></span>
           #1 Travel Agency in Kashmir
         </div>
 
-        {/* Headline (Kept exactly as you requested) */}
+        {/* Headline */}
         <h1 className="text-4xl md:text-6xl font-serif font-bold text-white mb-6 leading-tight drop-shadow-2xl tracking-tight animate-fade-in-up delay-100">
           Heaven is closer <br/>
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D97706] via-yellow-200 to-[#D97706]">

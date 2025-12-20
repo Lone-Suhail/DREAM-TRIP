@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import ScrollToTop from "@/components/ScrollToTop";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { SeasonProvider } from '../data/SeasonContext'; // <--- NEW IMPORT
 
 const playfair = Playfair_Display({ 
   subsets: ["latin"],
@@ -59,13 +60,19 @@ export default function RootLayout({
   return (
     <html lang="en-IN" className="scroll-smooth">
       <body className={`${playfair.variable} ${lato.variable} font-sans`}>
-        <Navbar />
-        {children}
-        <Footer />
         
-        {/* Floating Widgets */}
-        <WhatsAppWidget />
-        <ScrollToTop />
+        {/* --- WRAP EVERYTHING INSIDE SEASON PROVIDER --- */}
+        <SeasonProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          
+          {/* Floating Widgets */}
+          <WhatsAppWidget />
+          <ScrollToTop />
+        </SeasonProvider>
+        {/* ---------------------------------------------- */}
+
       </body>
       
       {/* Google Analytics */}
