@@ -31,20 +31,18 @@ export default function SeasonalHero() {
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pb-20">
       
-      {/* --- 1. DYNAMIC BACKGROUND IMAGE (DEBUG MODE) --- */}
-<div className="absolute inset-0 z-0">
-  {/* Dark Overlay (Stays on top) */}
-  <div className="absolute inset-0 bg-black/50 z-10"></div>
-  
-  {/* REAL IMAGE TAG (Better for debugging) */}
-  <img
-    key={currentSeason}
-    src={config.heroImage}
-    alt={`Current season is ${config.name}`}
-    className="w-full h-full object-cover animate-slow-zoom transition-all duration-1000"
-    onError={(e) => console.error("IMAGE FAILED TO LOAD:", config.heroImage)}
-  />
-</div>
+      {/* --- 1. DYNAMIC BACKGROUND IMAGE --- */}
+      <div className="absolute inset-0 z-0">
+        {/* Dark Overlay (Kept your bg-black/50) */}
+        <div className="absolute inset-0 bg-black/50 z-10"></div>
+        
+        {/* The Image that changes based on Season */}
+        <div 
+          key={currentSeason} // Key ensures the animation restarts when season changes
+          className="w-full h-full bg-cover bg-center animate-slow-zoom transition-all duration-1000"
+          style={{ backgroundImage: `url(${config.heroImage})` }}
+        />
+      </div>
 
       {/* --- 2. SEASON SELECTOR (Keep this so users can switch!) --- */}
       <div className="absolute top-24 right-4 z-30 flex flex-col gap-2 md:flex-row bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/20">
