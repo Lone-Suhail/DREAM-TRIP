@@ -34,8 +34,8 @@ export default function SeasonalHero() {
 
       {/* 2. SEASON SELECTOR (The "Gap" Filler) */}
       <div className="absolute z-30 w-full flex justify-center px-2
-        /* Mobile: Fixed at top-27 (Between Header and Text) */
-        top-27 
+        /* Mobile: Fixed at top-24 (Between Header and Text) */
+        top-24
         /* Desktop: Move to Right Side */
         md:top-24 md:justify-end md:right-4 md:w-auto md:px-0"
       >
