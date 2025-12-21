@@ -1,47 +1,50 @@
 'use client';
 
-import React from 'react'; // Removed useState/useEffect (not needed anymore)
+import React, { useState, useEffect } from 'react'; // Added hooks
 import Link from 'next/link';
 import { Star, ArrowRight, CheckCircle, Clock, Tag } from 'lucide-react';
+// --- IMPORT DATA ---
 import { packages } from '@/data/packages';
-import { seasonConfig } from '@/data/seasons';
-// Change the import line to this:
-import { useSeason } from '@/data/SeasonContext'; // <--- 1. IMPORT GLOBAL CONTEXT
+import { seasonConfig, getSeasonByMonth } from '@/data/seasons';
+import { useSeason } from '@/data/SeasonContext';
 
 export default function FeaturedPackages() {
   const featured = packages.slice(0, 4);
-
-  // --- 2. GET GLOBAL SEASON & MULTIPLIER ---
-  const { season } = useSeason(); 
-  const multiplier = seasonConfig[season].priceMultiplier; 
-  // -----------------------------------------
+  const { season } = useSeason();
+  
+  // Get multiplier (Safety check included)
+  const config = seasonConfig[season] || seasonConfig['winter'];
+  const multiplier = config.priceMultiplier;
 
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         
+        {/* Header */}
         <div className="text-center mb-16">
-          <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">Best Selling Tours</span>
+          <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">
+            Current Season: {season}
+          </span>
           <h2 className="text-4xl font-serif font-bold text-[#1E3A8A] mt-2">Popular Packages</h2>
           <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
             Handpicked itineraries that our customers love. Fully customizable to your needs.
           </p>
         </div>
 
+        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {featured.map((pkg) => {
             
-            // --- CLEAN PRICE & CALCULATE WITH GLOBAL MULTIPLIER ---
-            const rawPrice = typeof pkg.price === 'string' 
-              ? parseInt(pkg.price.replace(/,/g, ''), 10) 
-              : pkg.price;
-              
-            const dynamicPrice = Math.round(rawPrice * multiplier).toLocaleString('en-IN');
-            // -----------------------------------------------------
+            // --- FIX: SIMPLIFIED MATH LOGIC ---
+            // Since we updated packages.ts to use numbers, we just multiply directly.
+            // (We cast to 'number' just in case TypeScript is confused)
+            const dynamicPrice = Math.round((pkg.price as number) * multiplier).toLocaleString('en-IN');
+            // ----------------------------------
             
             return (
               <div key={pkg.id} className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 flex flex-col">
                 
+                {/* Image Section */}
                 <div className="relative h-64 overflow-hidden">
                   <img 
                     src={pkg.image} 
@@ -69,6 +72,7 @@ export default function FeaturedPackages() {
                   </div>
                 </div>
 
+                {/* Content Section */}
                 <div className="p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold text-[#1E3A8A] mb-2 leading-tight group-hover:text-[#D97706] transition-colors">
                     {pkg.title}
@@ -84,13 +88,17 @@ export default function FeaturedPackages() {
 
                   <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
                      <div>
-                       <p className="text-xs text-gray-400 uppercase">Starting From</p>
+                       <p className="text-[10px] font-bold text-[#D97706] uppercase tracking-wider mb-1">
+                         {season} Deal
+                       </p>
                        <div className="flex items-baseline gap-1">
                          <span className="text-sm font-bold text-[#D97706]">₹</span>
+                         {/* DISPLAY DYNAMIC PRICE */}
                          <p className="text-xl font-bold text-[#1E3A8A]">{dynamicPrice}</p>
                        </div>
                      </div>
                      
+                     {/* LINK TO DETAILS PAGE */}
                      <Link href={`/packages/${pkg.id}`}>
                        <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[#D97706] hover:text-white transition-all">
                           <ArrowRight size={18} />
@@ -104,6 +112,7 @@ export default function FeaturedPackages() {
           })}
         </div>
 
+        {/* View All Button */}
         <div className="text-center mt-12">
            <Link href="/packages">
              <button className="px-8 py-3 border-2 border-[#1E3A8A] text-[#1E3A8A] font-bold rounded-full hover:bg-[#1E3A8A] hover:text-white transition-all">
