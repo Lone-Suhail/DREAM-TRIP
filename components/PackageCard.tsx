@@ -3,13 +3,25 @@
 import React from 'react';
 import Link from 'next/link';
 import { Clock, MapPin, Star, CheckCircle, Users, ArrowRight, Tag } from 'lucide-react';
-import { Package } from '@/data/packages'; // Import type if available
+import { Package } from '@/data/packages';
+// 1. IMPORT THE BRAIN
+import { useSeason } from '@/data/SeasonContext';
+import { seasonConfig } from '@/data/seasons';
 
 interface PackageCardProps {
   data: Package;
 }
 
 const PackageCard: React.FC<PackageCardProps> = ({ data }) => {
+  
+  // 2. CONNECT TO THE SEASON
+  const { season } = useSeason();
+  const multiplier = seasonConfig[season].priceMultiplier;
+
+  // 3. DO THE MATH (Dynamic Pricing)
+  // Ensure data.price is treated as a number
+  const dynamicPrice = Math.round(data.price * multiplier).toLocaleString('en-IN');
+
   return (
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-gray-100 flex flex-col h-full">
       
@@ -76,11 +88,16 @@ const PackageCard: React.FC<PackageCardProps> = ({ data }) => {
 
             <div className="flex items-end justify-between">
                 <div>
-                    <p className="text-xs text-gray-400 font-medium uppercase mb-0.5">Starting From</p>
+                    {/* 4. ADDED SEASON LABEL HERE FOR CLARITY */}
+                    <p className="text-[10px] text-[#D97706] font-bold uppercase mb-0.5">{season} Price</p>
+                    
+                    {/* Note: keeping originalPrice static is fine, as it's usually the "Rack Rate" */}
                     <p className="text-sm text-gray-400 line-through font-medium">₹ {data.originalPrice}</p>
+                    
                     <div className="flex items-baseline gap-1">
                         <span className="text-lg font-bold text-[#D97706]">₹</span>
-                        <span className="text-3xl font-black text-[#D97706] tracking-tight">{data.price}</span>
+                        {/* 5. CHANGED FROM STATIC TO DYNAMIC */}
+                        <span className="text-3xl font-black text-[#D97706] tracking-tight">{dynamicPrice}</span>
                         <span className="text-xs text-gray-400 font-medium">/ person</span>
                     </div>
                 </div>
