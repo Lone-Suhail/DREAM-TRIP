@@ -2,11 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Ship, Coffee, Snowflake, ShieldCheck, Heart } from 'lucide-react'; // Removed unused imports
-import { packages } from '@/data/packages'; // Ensure path is correct (@/data/packages)
+import { ArrowRight, Ship, Coffee, Snowflake, ShieldCheck, Heart } from 'lucide-react';
 import SeasonalHero from '@/components/SeasonalHero';
-// 1. IMPORT THE SMART CARD
-import PackageCard from '@/components/PackageCard'; 
+import FeaturedPackages from '@/components/FeaturedPackages';
 
 // --- TESTIMONIALS DATA ---
 const reviews = [
@@ -20,13 +18,9 @@ const reviews = [
   { name: "David & Emily", from: "Australia", rating: 5, text: "We have traveled to Switzerland, but Kashmir has a unique charm. The Autumn colors were unreal.", date: "Oct 2025" }
 ];
 
-// --- DUPLICATE REVIEWS FOR INFINITE SCROLL ILLUSION ---
 const allReviews = [...reviews, ...reviews];
 
 export default function Home() {
-  // Show 4 packages on Home Page
-  const featuredPackages = packages.slice(0, 4);
-
   return (
     <main className="min-h-screen bg-white font-sans selection:bg-[#D97706] selection:text-white">
 
@@ -83,7 +77,6 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-            {/* Feature 1 */}
             <div className="flex flex-col items-center group">
               <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 text-[#1E3A8A] group-hover:bg-[#1E3A8A] group-hover:text-white transition-all duration-300">
                 <ShieldCheck size={40} />
@@ -91,8 +84,6 @@ export default function Home() {
               <h3 className="text-xl font-bold text-[#1E3A8A] mb-3">100% Safe & Verified</h3>
               <p className="text-gray-500 leading-relaxed max-w-xs">We verify every hotel, driver, and houseboat personally. Your safety is our #1 priority.</p>
             </div>
-
-            {/* Feature 2 */}
             <div className="flex flex-col items-center group">
               <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mb-6 text-[#D97706] group-hover:bg-[#D97706] group-hover:text-white transition-all duration-300">
                 <Heart size={40} />
@@ -100,11 +91,8 @@ export default function Home() {
               <h3 className="text-xl font-bold text-[#1E3A8A] mb-3">No Hidden Costs</h3>
               <p className="text-gray-500 leading-relaxed max-w-xs">The price we quote is the price you pay. No surprise taxes, no driver tips demanded.</p>
             </div>
-
-            {/* Feature 3 */}
             <div className="flex flex-col items-center group">
               <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 text-[#1E3A8A] group-hover:bg-[#1E3A8A] group-hover:text-white transition-all duration-300">
-                {/* Fixed incorrect Clock import usage if it was failing, otherwise standard Lucide icon */}
                 <ArrowRight size={40} className="rotate-45" /> 
               </div>
               <h3 className="text-xl font-bold text-[#1E3A8A] mb-3">24/7 Local Support</h3>
@@ -114,35 +102,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- 4. TRENDING PACKAGES (UPDATED TO USE SMART CARD) --- */}
-      <section className="py-24 bg-gray-50 relative">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-end mb-12">
-             <div>
-                <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm"> Handpicked itineraries that our customers love. Fully customizable to your needs.</span>
-                <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2">Popular Packages<br></br>Curated for You</h2>
-             </div>
-             <Link href="/packages">
-                <button className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full border border-gray-200 hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition-all font-bold cursor-pointer">
-                   View All Offers <ArrowRight size={18} />
-                </button>
-             </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredPackages.map((pkg) => (
-              // ✅ FIX: Use the Component that handles pricing!
-              <div key={pkg.id} className="h-full">
-                 <PackageCard data={pkg} />
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10 text-center md:hidden">
-              <Link href="/packages"><button className="px-6 py-3 rounded-full bg-[#1E3A8A] text-white font-bold w-full cursor-pointer">View All Packages</button></Link>
-          </div>
-        </div>
-      </section>
+      {/* --- 4. TRENDING PACKAGES (CLEANED UP!) --- */}
+      {/* We replaced the 40 lines of manual code with this single Component 👇 */}
+      <FeaturedPackages />
 
       {/* --- 5. STATS STRIP --- */}
       <section className="py-20 bg-[#1E3A8A] text-white relative overflow-hidden">
@@ -168,20 +130,16 @@ export default function Home() {
             <p className="text-gray-500 mt-4">Don't just take our word for it. Hear from our happy travelers.</p>
         </div>
 
-        {/* Marquee Wrapper */}
         <div className="w-full relative">
             <div className="absolute top-0 left-0 h-full w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
             <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
-
             <div className="animate-marquee flex gap-8 py-4">
                 {allReviews.map((review, idx) => (
                     <div 
                         key={idx} 
                         className="w-[400px] flex-shrink-0 bg-gray-50 p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col select-none"
                     >
-                         {/* Stars */}
                         <div className="flex items-center gap-1 mb-6 text-[#D97706]">
-                            {/* Simple Star Render without import loop complexity */}
                             {[...Array(review.rating)].map((_, i) => (
                                 <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#D97706" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                             ))}
