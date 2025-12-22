@@ -1,185 +1,238 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Ship, Coffee, Snowflake, ShieldCheck, Heart } from 'lucide-react';
+import { ArrowRight, Star, MapPin, Search, Calendar, Users, ShieldCheck, Heart, Sparkles, ChevronRight } from 'lucide-react';
 import SeasonalHero from '@/components/SeasonalHero';
-import FeaturedPackages from '@/components/FeaturedPackages';
+import { packages } from '@/data/packages';
+import PackageCard from '@/components/PackageCard';
 
-// --- TESTIMONIALS DATA ---
-const reviews = [
-  { name: "Rahul & Simran", from: "Mumbai", rating: 5, text: "We were worried about safety, but Dream Trip made us feel like family. The houseboat stay in Dal Lake was magical.", date: "Nov 2025" },
-  { name: "Amit Verma", from: "Delhi", rating: 5, text: "The driver (Sameer Bhai) was a gem. He took us to a hidden spot in Pahalgam that wasn't on the map. Top-notch service.", date: "Oct 2025" },
-  { name: "Sarah Jenkins", from: "UK", rating: 5, text: "As a solo female traveler, I was hesitant. But the team ensured I was safe 24/7. Verified drivers and daily check-ins.", date: "Dec 2025" },
-  { name: "The Mehta Family", from: "Gujarat", rating: 4, text: "Hotels in Gulmarg were heated perfectly (very important for my parents). The food was good, mostly vegetarian as requested.", date: "Jan 2025" },
-  { name: "Arjun & Friends", from: "Bangalore", rating: 5, text: "Skiing in Gulmarg was the highlight! The team arranged the instructor and equipment for us in advance.", date: "Jan 2025" },
-  { name: "Priya Das", from: "Kolkata", rating: 5, text: "I wanted a relaxed trip. Doodhpathri was the best suggestion they gave. So peaceful compared to Sonamarg.", date: "Sep 2025" },
-  { name: "Col. R.K. Singh", from: "Pune", rating: 5, text: "Very professional. No hidden costs. The Innova Crysta was brand new. Will definitely book again.", date: "Aug 2025" },
-  { name: "David & Emily", from: "Australia", rating: 5, text: "We have traveled to Switzerland, but Kashmir has a unique charm. The Autumn colors were unreal.", date: "Oct 2025" }
+// --- DATA FOR NEW SECTIONS ---
+const destinations = [
+  { id: 'srinagar', name: 'Srinagar', tag: 'The Venice of the East', image: '/srinagar.jpg', desc: 'Dal Lake houseboats, Mughal Gardens, and heritage walks.' },
+  { id: 'gulmarg', name: 'Gulmarg', tag: 'Meadow of Flowers', image: '/gulmarg.jpg', desc: 'World’s highest gondola, skiing slopes, and luxury resorts.' },
+  { id: 'pahalgam', name: 'Pahalgam', tag: 'Valley of Shepherds', image: '/pahalgam.jpg', desc: 'Betaab Valley, Aru Valley, and river rafting adventures.' },
 ];
 
-const allReviews = [...reviews, ...reviews];
+const categories = [
+  { icon: "🏔️", title: "Adventure", desc: "Trekking & Skiing" },
+  { icon: "🍯", title: "Honeymoon", desc: "Romantic Escapes" },
+  { icon: "🕌", title: "Heritage", desc: "Culture & History" },
+  { icon: "🧘", title: "Wellness", desc: "Yoga & Peace" },
+];
 
 export default function Home() {
+  const [activeDest, setActiveDest] = useState(0);
+  // Show 4 packages for the scroll section
+  const featuredPackages = packages.slice(0, 4); 
+
   return (
-    <main className="min-h-screen bg-white font-sans selection:bg-[#D97706] selection:text-white">
+    <main className="min-h-screen bg-slate-50 font-sans selection:bg-[#D97706] selection:text-white">
 
-     {/* --- 1. SEASONAL HERO SECTION --- */}
-      <SeasonalHero />
+      {/* --- 1. HERO SECTION (With Floating Search Bar) --- */}
+      <div className="relative">
+        <SeasonalHero />
+        
+        {/* Floating Glass Search Bar (Unique Touch) */}
+        <div className="absolute bottom-[-40px] left-0 w-full z-40 px-4">
+          <div className="container mx-auto max-w-4xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl rounded-2xl p-4 flex flex-col md:flex-row items-center gap-4">
+             <div className="flex-1 w-full flex items-center gap-3 border-b md:border-b-0 md:border-r border-gray-300 pb-2 md:pb-0 px-2">
+                <MapPin className="text-[#D97706]" size={20} />
+                <div className="flex flex-col">
+                   <span className="text-[10px] font-bold uppercase text-gray-500 tracking-wider">Where</span>
+                   <span className="font-bold text-[#1E3A8A]">All Kashmir</span>
+                </div>
+             </div>
+             <div className="flex-1 w-full flex items-center gap-3 border-b md:border-b-0 md:border-r border-gray-300 pb-2 md:pb-0 px-2">
+                <Calendar className="text-[#D97706]" size={20} />
+                <div className="flex flex-col">
+                   <span className="text-[10px] font-bold uppercase text-gray-500 tracking-wider">When</span>
+                   <span className="font-bold text-[#1E3A8A]">Any Dates</span>
+                </div>
+             </div>
+             <div className="flex-1 w-full flex items-center gap-3 pb-2 md:pb-0 px-2">
+                <Users className="text-[#D97706]" size={20} />
+                <div className="flex flex-col">
+                   <span className="text-[10px] font-bold uppercase text-gray-500 tracking-wider">Guests</span>
+                   <span className="font-bold text-[#1E3A8A]">2 Adults</span>
+                </div>
+             </div>
+             <button className="w-full md:w-auto bg-[#1E3A8A] hover:bg-[#D97706] text-white p-4 rounded-xl transition-colors shadow-lg">
+                <Search size={24} />
+             </button>
+          </div>
+        </div>
+      </div>
 
-      {/* --- 2. THE EXPERIENCE BENTO GRID --- */}
-      <section className="py-24 bg-gray-50 relative z-30">
+      {/* --- 2. CATEGORIES (Clean & Minimal) --- */}
+      <section className="pt-32 pb-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mb-4">Not Just a Trip, An Experience</h2>
-            <p className="text-gray-500 text-lg">Curated moments that stay with you forever.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
-            <div className="md:col-span-2 md:row-span-2 relative group rounded-3xl overflow-hidden cursor-pointer">
-              <img src="/srinagar.jpg" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-8 flex flex-col justify-end">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-4 text-white"><Ship size={24} /></div>
-                <h3 className="text-3xl font-bold text-white mb-2">Heritage Houseboats</h3>
-                <p className="text-gray-200">Wake up to the sound of ripples on Dal Lake in 100-year-old floating palaces.</p>
-              </div>
-            </div>
-            <div className="md:col-span-1 relative group rounded-3xl overflow-hidden cursor-pointer bg-[#1E3A8A]">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-              <div className="p-8 h-full flex flex-col justify-center items-center text-center relative z-10">
-                 <Coffee size={48} className="text-[#D97706] mb-4" />
-                 <h3 className="text-xl font-bold text-white mb-2">Authentic Wazwan</h3>
-                 <p className="text-blue-200 text-sm">Taste the royal 36-course meal of Kashmir.</p>
-              </div>
-            </div>
-            <div className="md:col-span-1 relative group rounded-3xl overflow-hidden cursor-pointer">
-               <img src="/gulmarg.jpg" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors p-6 flex flex-col justify-end">
-                 <h3 className="text-xl font-bold text-white flex items-center gap-2"><Snowflake size={18}/> Winter Magic</h3>
-               </div>
-            </div>
-            <div className="md:col-span-2 relative group rounded-3xl overflow-hidden cursor-pointer">
-              <img src="/pahalgam.jpg" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-               <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent p-8 flex flex-col justify-center">
-                  <h3 className="text-2xl font-bold text-white mb-2">Untamed Valleys</h3>
-                  <p className="text-gray-200 max-w-xs">Trek through the untouched pine forests of Pahalgam and Sonamarg.</p>
-               </div>
-            </div>
-          </div>
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {categories.map((cat, idx) => (
+                <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group text-center">
+                   <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
+                   <h3 className="font-bold text-[#1E3A8A]">{cat.title}</h3>
+                   <p className="text-xs text-gray-400">{cat.desc}</p>
+                </div>
+              ))}
+           </div>
         </div>
       </section>
 
-      {/* --- 3. WHY CHOOSE US SECTION --- */}
-      <section className="py-24 bg-white border-y border-gray-50">
+      {/* --- 3. DESTINATION SPOTLIGHT (Interactive Tabs) --- */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">The Dream Trip Difference</span>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2">Why Choose Us?</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-            <div className="flex flex-col items-center group">
-              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 text-[#1E3A8A] group-hover:bg-[#1E3A8A] group-hover:text-white transition-all duration-300">
-                <ShieldCheck size={40} />
+           <div className="flex flex-col md:flex-row gap-12 items-center">
+              
+              {/* Left Text */}
+              <div className="md:w-1/3 space-y-8">
+                 <div>
+                   <span className="text-[#D97706] font-bold uppercase tracking-widest text-xs">Explore Paradise</span>
+                   <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2 leading-tight">
+                     Uncover the <br/> Hidden Gems
+                   </h2>
+                 </div>
+                 
+                 <div className="space-y-4">
+                   {destinations.map((dest, idx) => (
+                     <div 
+                       key={dest.id}
+                       onClick={() => setActiveDest(idx)}
+                       className={`p-4 rounded-xl cursor-pointer transition-all border-l-4 ${
+                         activeDest === idx 
+                         ? 'bg-blue-50 border-[#1E3A8A] pl-6' 
+                         : 'border-transparent hover:bg-gray-50'
+                       }`}
+                     >
+                        <h4 className={`text-lg font-bold ${activeDest === idx ? 'text-[#1E3A8A]' : 'text-gray-400'}`}>
+                          {dest.name}
+                        </h4>
+                        {activeDest === idx && (
+                          <p className="text-sm text-gray-600 mt-1 animate-fade-in">{dest.tag}</p>
+                        )}
+                     </div>
+                   ))}
+                 </div>
+                 
+                 <Link href="/destinations">
+                   <button className="flex items-center gap-2 text-[#D97706] font-bold hover:gap-4 transition-all mt-4">
+                     View All Destinations <ArrowRight size={18} />
+                   </button>
+                 </Link>
               </div>
-              <h3 className="text-xl font-bold text-[#1E3A8A] mb-3">100% Safe & Verified</h3>
-              <p className="text-gray-500 leading-relaxed max-w-xs">We verify every hotel, driver, and houseboat personally. Your safety is our #1 priority.</p>
-            </div>
-            <div className="flex flex-col items-center group">
-              <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mb-6 text-[#D97706] group-hover:bg-[#D97706] group-hover:text-white transition-all duration-300">
-                <Heart size={40} />
-              </div>
-              <h3 className="text-xl font-bold text-[#1E3A8A] mb-3">No Hidden Costs</h3>
-              <p className="text-gray-500 leading-relaxed max-w-xs">The price we quote is the price you pay. No surprise taxes, no driver tips demanded.</p>
-            </div>
-            <div className="flex flex-col items-center group">
-              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 text-[#1E3A8A] group-hover:bg-[#1E3A8A] group-hover:text-white transition-all duration-300">
-                <ArrowRight size={40} className="rotate-45" /> 
-              </div>
-              <h3 className="text-xl font-bold text-[#1E3A8A] mb-3">24/7 Local Support</h3>
-              <p className="text-gray-500 leading-relaxed max-w-xs">We live here. If you need anything at 2 AM, our local team is just one call away.</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* --- 4. TRENDING PACKAGES (CLEANED UP!) --- */}
-      {/* We replaced the 40 lines of manual code with this single Component 👇 */}
-      <FeaturedPackages />
-
-      {/* --- 5. STATS STRIP --- */}
-      <section className="py-20 bg-[#1E3A8A] text-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-            <div className="absolute top-10 right-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#D97706] rounded-full blur-3xl"></div>
-        </div>
-        <div className="container mx-auto px-4 relative z-10">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center divide-x divide-white/10">
-                <div className="space-y-2"><p className="text-5xl font-bold font-serif">5k+</p><p className="text-blue-200 text-sm tracking-widest uppercase">Happy Travelers</p></div>
-                <div className="space-y-2"><p className="text-5xl font-bold font-serif">24/7</p><p className="text-blue-200 text-sm tracking-widest uppercase">On-Trip Support</p></div>
-                <div className="space-y-2"><p className="text-5xl font-bold font-serif">100%</p><p className="text-blue-200 text-sm tracking-widest uppercase">Customizable</p></div>
-                <div className="space-y-2"><p className="text-5xl font-bold font-serif">4.9</p><p className="text-blue-200 text-sm tracking-widest uppercase">Google Rating</p></div>
-            </div>
-        </div>
-      </section>
-
-      {/* --- 6. TESTIMONIALS MARQUEE --- */}
-      <section className="py-24 bg-white overflow-hidden">
-        <div className="container mx-auto px-4 mb-12 text-center">
-            <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">Guest Reviews</span>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2">Stories from Paradise</h2>
-            <p className="text-gray-500 mt-4">Don't just take our word for it. Hear from our happy travelers.</p>
-        </div>
-
-        <div className="w-full relative">
-            <div className="absolute top-0 left-0 h-full w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
-            <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
-            <div className="animate-marquee flex gap-8 py-4">
-                {allReviews.map((review, idx) => (
+              {/* Right Image Display (Magazine Style) */}
+              <div className="md:w-2/3 w-full h-[500px] relative rounded-[2rem] overflow-hidden shadow-2xl group">
+                 {destinations.map((dest, idx) => (
                     <div 
-                        key={idx} 
-                        className="w-[400px] flex-shrink-0 bg-gray-50 p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col select-none"
+                      key={dest.id}
+                      className={`absolute inset-0 transition-opacity duration-700 ${activeDest === idx ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
                     >
-                        <div className="flex items-center gap-1 mb-6 text-[#D97706]">
-                            {[...Array(review.rating)].map((_, i) => (
-                                <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#D97706" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            ))}
-                        </div>
-                        <div className="relative mb-6">
-                            <span className="text-6xl text-gray-200 absolute -top-6 -left-2 font-serif">"</span>
-                            <p className="text-gray-600 leading-relaxed relative z-10 italic">{review.text}</p>
-                        </div>
-                        <div className="mt-auto flex items-center gap-4 pt-6 border-t border-gray-200">
-                            <div className="w-10 h-10 rounded-full bg-[#1E3A8A] text-white flex items-center justify-center font-bold text-sm">
-                                {review.name[0]}
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-[#1E3A8A] text-sm">{review.name}</h4>
-                                <p className="text-xs text-gray-400">{review.from} • {review.date}</p>
-                            </div>
-                        </div>
+                       <img src={dest.image} alt={dest.name} className="w-full h-full object-cover" />
+                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                       <div className="absolute bottom-8 left-8 text-white max-w-md">
+                          <h3 className="text-3xl font-serif font-bold mb-2">{dest.name}</h3>
+                          <p className="text-gray-200 text-lg leading-relaxed">{dest.desc}</p>
+                       </div>
                     </div>
-                ))}
-            </div>
-        </div>
+                 ))}
+              </div>
 
-        <div className="mt-12 text-center relative z-20">
-            <a href="https://www.google.com/search?q=dream+trip+kashmir+reviews" target="_blank" className="inline-flex items-center gap-2 text-[#1E3A8A] font-bold hover:text-[#D97706] transition-colors cursor-pointer">
-                See more reviews on Google <ArrowRight size={16} />
-            </a>
+           </div>
         </div>
       </section>
 
-      {/* --- 7. CTA SECTION --- */}
-      <section className="relative py-32 bg-gray-900 overflow-hidden">
-          <img src="/sonamarg.jpg" className="absolute inset-0 w-full h-full object-cover opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent"></div>
-          <div className="relative z-10 container mx-auto px-4 text-center">
-              <h2 className="text-4xl md:text-7xl font-serif font-bold text-white mb-6">Your Dream Trip Awaits</h2>
-              <p className="text-gray-300 max-w-2xl mx-auto text-lg mb-10">Stop dreaming and start packing. Our local experts are ready to craft the perfect itinerary for you.</p>
-              <Link href="/book?title=Plan My Dream Trip">
-                <button className="px-12 py-5 bg-white text-gray-900 hover:bg-[#D97706] hover:text-white font-bold rounded-full transition-all text-xl shadow-2xl cursor-pointer">Get a Free Quote Now</button>
-              </Link>
-          </div>
+      {/* --- 4. SIGNATURE PACKAGES (Horizontal Scroll) --- */}
+      <section className="py-24 bg-gray-50 overflow-hidden">
+        <div className="container mx-auto px-4 mb-10 flex justify-between items-end">
+           <div>
+             <span className="text-[#D97706] font-bold uppercase tracking-widest text-xs">Handpicked Journeys</span>
+             <h2 className="text-4xl font-serif font-bold text-[#1E3A8A] mt-2">Signature Packages</h2>
+           </div>
+           <div className="hidden md:flex gap-2">
+              <div className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-400"><ChevronRight className="rotate-180"/></div>
+              <div className="w-10 h-10 rounded-full bg-[#1E3A8A] text-white flex items-center justify-center"><ChevronRight /></div>
+           </div>
+        </div>
+        
+        {/* Horizontal Carousel Container */}
+        <div className="w-full overflow-x-auto pb-12 px-4 scrollbar-hide">
+           <div className="flex gap-6 w-max">
+              {featuredPackages.map((pkg) => (
+                 <div key={pkg.id} className="w-[300px] md:w-[350px]">
+                    {/* ✅ REUSING YOUR SMART PRICING CARD */}
+                    <PackageCard data={pkg} />
+                 </div>
+              ))}
+           </div>
+        </div>
+        
+        <div className="text-center mt-8">
+           <Link href="/packages">
+              <button className="px-8 py-3 bg-[#1E3A8A] text-white rounded-full font-bold hover:bg-[#D97706] transition-colors shadow-lg">
+                Explore All Packages
+              </button>
+           </Link>
+        </div>
+      </section>
+
+      {/* --- 5. THE PROMISE (Dark Premium Section) --- */}
+      <section className="py-24 bg-[#0F172A] text-white relative overflow-hidden">
+         {/* Background Pattern */}
+         <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+         
+         <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center max-w-2xl mx-auto mb-16">
+               <div className="inline-block p-3 rounded-full bg-white/10 backdrop-blur-md mb-6">
+                  <Sparkles className="text-[#D97706]" size={24} />
+               </div>
+               <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">The Dream Trip Standard</h2>
+               <p className="text-gray-400 text-lg">We don't just book hotels. We craft experiences that become family heirlooms.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+               <div className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+                  <ShieldCheck className="text-[#D97706] mb-6 group-hover:scale-110 transition-transform" size={40} />
+                  <h3 className="text-xl font-bold mb-3">Verified Partners Only</h3>
+                  <p className="text-gray-400 leading-relaxed">We personally visit every hotel and houseboat. If we wouldn't stay there, we won't book it for you.</p>
+               </div>
+               <div className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+                  <Users className="text-[#D97706] mb-6 group-hover:scale-110 transition-transform" size={40} />
+                  <h3 className="text-xl font-bold mb-3">Local Experts, Not Bots</h3>
+                  <p className="text-gray-400 leading-relaxed">Chat with real Kashmiris who know which cafe serves the best Kahwa and where the sunset looks best.</p>
+               </div>
+               <div className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+                  <Heart className="text-[#D97706] mb-6 group-hover:scale-110 transition-transform" size={40} />
+                  <h3 className="text-xl font-bold mb-3">No Hidden Surprises</h3>
+                  <p className="text-gray-400 leading-relaxed">The price you see is the price you pay. Taxes, tolls, and driver allowances are always included.</p>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* --- 6. MODERN CTA --- */}
+      <section className="py-24 bg-white">
+         <div className="container mx-auto px-4">
+            <div className="bg-[#D97706] rounded-[3rem] p-12 md:p-20 relative overflow-hidden text-center shadow-2xl">
+               <div className="absolute top-0 left-0 w-full h-full bg-[url('/srinagar.jpg')] bg-cover opacity-10 mix-blend-overlay"></div>
+               <div className="relative z-10 max-w-3xl mx-auto">
+                  <h2 className="text-4xl md:text-6xl font-serif font-bold text-white mb-6">Ready for Kashmir?</h2>
+                  <p className="text-white/90 text-xl mb-10">Let's build a custom itinerary that fits your dates, budget, and dreams.</p>
+                  <div className="flex flex-col sm:flex-row justify-center gap-4">
+                     <Link href="/plan">
+                        <button className="px-10 py-4 bg-white text-[#D97706] font-bold rounded-full text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                           Start Planning Free
+                        </button>
+                     </Link>
+                     <Link href="/contact">
+                        <button className="px-10 py-4 border-2 border-white text-white font-bold rounded-full text-lg hover:bg-white hover:text-[#D97706] transition-all">
+                           Talk to an Expert
+                        </button>
+                     </Link>
+                  </div>
+               </div>
+            </div>
+         </div>
       </section>
 
     </main>
