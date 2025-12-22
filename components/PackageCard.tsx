@@ -90,10 +90,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ data }) => {
                 <div>
                     {/* 4. ADDED SEASON LABEL HERE FOR CLARITY */}
                     <p className="text-[10px] text-[#D97706] font-bold uppercase mb-0.5">{season} Price</p>
-                    {/* DEBUG LINE - DELETE LATER */}
-                    <p className="text-red-500 font-bold text-xs">
-                          Multiplier: {multiplier} | Base: {data.price}
-                    </p>
+                    
                     {/* Note: keeping originalPrice static is fine, as it's usually the "Rack Rate" */}
                     <p className="text-sm text-gray-400 line-through font-medium">₹ {data.originalPrice}</p>
                     

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Star, MapPin, Coffee, Snowflake, Ship, ChevronDown, Wand2, Quote, ShieldCheck, Clock, Heart } from 'lucide-react';
-import { packages } from '../data/packages';
+import { ArrowRight, Ship, Coffee, Snowflake, ShieldCheck, Heart } from 'lucide-react'; // Removed unused imports
+import { packages } from '@/data/packages'; // Ensure path is correct (@/data/packages)
 import SeasonalHero from '@/components/SeasonalHero';
-import { seasonConfig, getSeasonByMonth } from '@/data/seasons'; // <--- ADD THIS
+// 1. IMPORT THE SMART CARD
+import PackageCard from '@/components/PackageCard'; 
 
 // --- TESTIMONIALS DATA ---
 const reviews = [
@@ -23,21 +24,16 @@ const reviews = [
 const allReviews = [...reviews, ...reviews];
 
 export default function Home() {
+  // Show 3 packages on Home Page
   const featuredPackages = packages.slice(0, 3);
   
-  // --- ADD THIS LOGIC ---
-  const [multiplier, setMultiplier] = useState(1); // Default is 1 (Standard price)
-
-  useEffect(() => {
-    const currentSeason = getSeasonByMonth();
-    setMultiplier(seasonConfig[currentSeason].priceMultiplier);
-  }, []);
+  // ❌ REMOVED: Manual state/effect logic. 
+  // We don't need it because PackageCard handles the logic internally now!
 
   return (
     <main className="min-h-screen bg-white font-sans selection:bg-[#D97706] selection:text-white">
 
-     {/* --- 1. SEASONAL HERO SECTION (NEW) --- */}
-      {/* We replaced the old code with this single line below 👇 */}
+     {/* --- 1. SEASONAL HERO SECTION --- */}
       <SeasonalHero />
 
       {/* --- 2. THE EXPERIENCE BENTO GRID --- */}
@@ -81,7 +77,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- 3. WHY CHOOSE US SECTION (NEW!) --- */}
+      {/* --- 3. WHY CHOOSE US SECTION --- */}
       <section className="py-24 bg-white border-y border-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -111,7 +107,8 @@ export default function Home() {
             {/* Feature 3 */}
             <div className="flex flex-col items-center group">
               <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 text-[#1E3A8A] group-hover:bg-[#1E3A8A] group-hover:text-white transition-all duration-300">
-                <Clock size={40} />
+                {/* Fixed incorrect Clock import usage if it was failing, otherwise standard Lucide icon */}
+                <ArrowRight size={40} className="rotate-45" /> 
               </div>
               <h3 className="text-xl font-bold text-[#1E3A8A] mb-3">24/7 Local Support</h3>
               <p className="text-gray-500 leading-relaxed max-w-xs">We live here. If you need anything at 2 AM, our local team is just one call away.</p>
@@ -120,7 +117,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- 4. TRENDING PACKAGES --- */}
+      {/* --- 4. TRENDING PACKAGES (UPDATED TO USE SMART CARD) --- */}
       <section className="py-24 bg-gray-50 relative">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
@@ -130,37 +127,20 @@ export default function Home() {
              </div>
              <Link href="/packages">
                 <button className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full border border-gray-200 hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition-all font-bold cursor-pointer">
-                    View All Offers <ArrowRight size={18} />
+                   View All Offers <ArrowRight size={18} />
                 </button>
              </Link>
           </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredPackages.map((pkg) => (
-              <div key={pkg.id} className="group bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden relative">
-                <div className="h-72 overflow-hidden relative">
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-[#1E3A8A] z-10 flex items-center gap-1"><Star size={12} className="fill-[#D97706] text-[#D97706]" /> {pkg.rating}</div>
-                    {pkg.tag && (<div className="absolute bottom-4 left-4 bg-[#D97706] text-white px-3 py-1 rounded-lg text-xs font-bold z-10">{pkg.tag}</div>)}
-                    <img src={pkg.image} alt={pkg.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"/>
-                </div>
-                <div className="p-8">
-                    <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold text-[#1E3A8A] group-hover:text-[#D97706] transition-colors line-clamp-1">{pkg.title}</h3>
-                        <span className="bg-blue-50 text-[#1E3A8A] text-xs font-bold px-2 py-1 rounded">{pkg.duration}</span>
-                    </div>
-                    <div className="flex items-end gap-3 mb-6">
-                        <div><p className="text-xs text-gray-400 line-through">₹ {pkg.originalPrice}</p><p className="text-2xl font-bold text-[#1E3A8A]">₹ {pkg.price}</p></div>
-                        <span className="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full mb-1">50% SAVINGS</span>
-                    </div>
-                    <div className="border-t border-gray-100 pt-4 flex items-center justify-between">
-                         <div className="flex items-center gap-2 text-sm text-gray-500"><MapPin size={16} /> {pkg.location.split(',')[0]}</div>
-                         <Link href={`/packages/${pkg.id}`}>
-                            <button className="w-10 h-10 rounded-full bg-[#1E3A8A] text-white flex items-center justify-center group-hover:bg-[#D97706] transition-colors cursor-pointer"><ArrowRight size={18} /></button>
-                         </Link>
-                    </div>
-                </div>
+              // ✅ FIX: Use the Component that handles pricing!
+              <div key={pkg.id} className="h-full">
+                 <PackageCard data={pkg} />
               </div>
             ))}
           </div>
+
           <div className="mt-10 text-center md:hidden">
               <Link href="/packages"><button className="px-6 py-3 rounded-full bg-[#1E3A8A] text-white font-bold w-full cursor-pointer">View All Packages</button></Link>
           </div>
@@ -202,14 +182,16 @@ export default function Home() {
                         key={idx} 
                         className="w-[400px] flex-shrink-0 bg-gray-50 p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col select-none"
                     >
+                         {/* Stars */}
                         <div className="flex items-center gap-1 mb-6 text-[#D97706]">
+                            {/* Simple Star Render without import loop complexity */}
                             {[...Array(review.rating)].map((_, i) => (
-                                <Star key={i} size={16} fill="#D97706" />
+                                <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#D97706" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                             ))}
                         </div>
                         <div className="relative mb-6">
-                            <Quote size={40} className="absolute -top-2 -left-2 text-gray-200 fill-gray-200" />
-                            <p className="text-gray-600 leading-relaxed relative z-10 italic">"{review.text}"</p>
+                            <span className="text-6xl text-gray-200 absolute -top-6 -left-2 font-serif">"</span>
+                            <p className="text-gray-600 leading-relaxed relative z-10 italic">{review.text}</p>
                         </div>
                         <div className="mt-auto flex items-center gap-4 pt-6 border-t border-gray-200">
                             <div className="w-10 h-10 rounded-full bg-[#1E3A8A] text-white flex items-center justify-center font-bold text-sm">
