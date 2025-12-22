@@ -24,11 +24,8 @@ const reviews = [
 const allReviews = [...reviews, ...reviews];
 
 export default function Home() {
-  // Show 3 packages on Home Page
-  const featuredPackages = packages.slice(0, 3);
-  
-  // ❌ REMOVED: Manual state/effect logic. 
-  // We don't need it because PackageCard handles the logic internally now!
+  // Show 4 packages on Home Page
+  const featuredPackages = packages.slice(0, 4);
 
   return (
     <main className="min-h-screen bg-white font-sans selection:bg-[#D97706] selection:text-white">
@@ -122,8 +119,8 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
              <div>
-                <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">Exclusive Deals</span>
-                <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2">Curated for You</h2>
+                <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm"> Handpicked itineraries that our customers love. Fully customizable to your needs.</span>
+                <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2">Popular Packages<br></br>Curated for You</h2>
              </div>
              <Link href="/packages">
                 <button className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full border border-gray-200 hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition-all font-bold cursor-pointer">
