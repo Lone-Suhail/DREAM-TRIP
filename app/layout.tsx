@@ -39,6 +39,11 @@ export const metadata: Metadata = {
   keywords: ["Kashmir tour packages", "Srinagar taxi service", "Gulmarg hotels", "Kashmir tourism", "Dal Lake houseboat"],
   authors: [{ name: "Dream Trip Kashmir" }],
   
+  icons: {
+    icon: '/icon.png', // Ensure icon.png is in your public/ folder
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   // --- PWA MANIFEST LINKED HERE ---
   manifest: "/manifest.json", 
   
