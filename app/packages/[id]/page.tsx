@@ -1,26 +1,30 @@
 import React from 'react';
-import { packages } from '@/data/packages'; // Ensure this path is correct
+import { packages } from '@/data/packages';
 import { notFound } from 'next/navigation';
-import { Clock, MapPin, CheckCircle, Calendar, ArrowLeft, XCircle, Star, Info, ShieldAlert, Tag, ArrowRight } from 'lucide-react';
+import { MapPin, CheckCircle, Calendar, ArrowLeft, XCircle, Info, ShieldAlert, Tag } from 'lucide-react';
 import Link from 'next/link';
+import DynamicPricing from '@/components/DynamicPricing'; 
 
-// 1. Generate Static Params (Pre-builds pages for speed)
 export async function generateStaticParams() {
   return packages.map((pkg) => ({
-    id: pkg.id.toString(), // Convert 101 -> "101"
+    id: pkg.id.toString(),
   }));
 }
 
-// 2. Main Page Component
 export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  
-  // --- THE FIX: Compare String to String ---
-  // We convert p.id to string so "101" matches "101"
   const pkg = packages.find((p) => p.id.toString() === id);
 
-  // If no package found, show 404
   if (!pkg) return notFound();
+
+  // ✅ FIX: No more .replace() or complex parsing.
+  // We just treat it as a number directly.
+  const basePrice = Number(pkg.price);
+  
+  // Handle originalPrice safely (if it's missing, just add 30% to base price)
+  const originalPrice = pkg.originalPrice 
+    ? Number(pkg.originalPrice) 
+    : Math.round(basePrice * 1.3);
 
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
@@ -140,50 +144,18 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 )}
             </div>
 
-            {/* --- RIGHT COLUMN (STICKY BOOKING) --- */}
+            {/* --- RIGHT COLUMN (SMART PRICING COMPONENT) --- */}
             <div className="lg:w-1/3">
-                <div className="bg-white rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] sticky top-28 border border-gray-100">
-                    <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
-                        <div>
-                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wide">Starting From</p>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="text-gray-400 line-through text-sm">₹ {pkg.originalPrice}</span>
-                                <span className="bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded">50% OFF</span>
-                            </div>
-                            <h3 className="text-3xl font-bold text-[#1E3A8A]">₹ {pkg.price}</h3>
-                            <p className="text-xs text-gray-400">per person (Min {pkg.minPax} Pax)</p>
-                        </div>
-                        <div className="text-right">
-                             <div className="flex items-center gap-1 justify-end">
-                                <Star size={14} className="fill-[#D97706] text-[#D97706]"/>
-                                <span className="font-bold">{pkg.rating}</span>
-                             </div>
-                             <p className="text-xs text-gray-400">{pkg.reviews} Reviews</p>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4 mb-8">
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Duration</span>
-                            <span className="font-bold text-gray-800">{pkg.duration}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Location</span>
-                            <span className="font-bold text-gray-800 text-right w-1/2">{pkg.location}</span>
-                        </div>
-                    </div>
-
-                    {/* Book Button */}
-                    <Link href={`/book?package=${encodeURIComponent(pkg.title)}`}>
-                        <button className="w-full bg-[#D97706] hover:bg-blue-900 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 mb-3 flex items-center justify-center gap-2">
-                            Proceed to Book <ArrowRight size={20} />
-                        </button>
-                    </Link>
-                    
-                    <div className="mt-6 flex items-center justify-center gap-2 text-xs text-gray-400">
-                        <ShieldAlert size={14} /> Secure Booking & Payment
-                    </div>
-                </div>
+               <DynamicPricing 
+                  basePrice={basePrice}
+                  originalPrice={originalPrice}
+                  pkgTitle={pkg.title}
+                  rating={pkg.rating}
+                  reviews={pkg.reviews}
+                  duration={pkg.duration}
+                  location={pkg.location}
+                  minPax={pkg.minPax}
+               />
             </div>
 
         </div>
