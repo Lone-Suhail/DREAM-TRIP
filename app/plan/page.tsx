@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, Users, Star, Car, Check, Info, ArrowRight, MapPin, Sparkles, Heart, Mountain, Snowflake, Palmtree, RefreshCw, CheckCircle } from 'lucide-react';
-import { useSeason } from '@/data/SeasonContext';
-import { seasonConfig } from '@/data/seasons';
+import { Users, Car, Info, ArrowRight, MapPin, Sparkles, Heart, Mountain, Snowflake, Palmtree, RefreshCw, CheckCircle, CalendarDays } from 'lucide-react';
 
 // --- CONFIGURATION ---
 const VIBES = [
@@ -15,10 +13,6 @@ const VIBES = [
 ];
 
 export default function SmartBuilder() {
-  const { season } = useSeason();
-  const seasonData = seasonConfig[season] || seasonConfig['summer'];
-  const multiplier = seasonData.priceMultiplier;
-
   // --- STEPS STATE ---
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -33,7 +27,8 @@ export default function SmartBuilder() {
   // --- OUTPUTS ---
   const [quote, setQuote] = useState({ min: 0, max: 0, perPerson: 0 });
   const [vehicle, setVehicle] = useState('Sedan');
-  const [suggestedRoute, setSuggestedRoute] = useState('');
+  const [suggestedRoute, setSuggestedRoute] = useState<string[]>([]);
+  const [detectedSeason, setDetectedSeason] = useState(''); // New: Show user what season we detected
 
   // --- DATE MINIMUM ---
   const [minDate, setMinDate] = useState('');
@@ -42,66 +37,94 @@ export default function SmartBuilder() {
     setMinDate(dt.toISOString().split('T')[0]);
   }, []);
 
-  // --- INTELLIGENT LOGIC ENGINE ---
+  // --- 🧠 THE SMART ENGINE ---
   const generateProposal = () => {
+    if (!startDate) return;
     setLoading(true);
 
-    // Simulate "Thinking"
     setTimeout(() => {
-      // 1. SMART VEHICLE SELECTION
+      // 1. DETECT SEASON BASED ON SELECTED DATE
+      const dateObj = new Date(startDate);
+      const month = dateObj.getMonth(); // 0 = Jan, 11 = Dec
+      
+      let seasonMultiplier = 1.0;
+      let seasonName = 'Standard Season';
+
+      // LOGIC: Kashmir Seasonality
+      if (month >= 3 && month <= 5) { 
+         // April, May, June (PEAK SUMMER)
+         seasonMultiplier = 1.4; 
+         seasonName = 'Peak Summer (Tulip Season)';
+      } else if (month === 11 || month <= 2) { 
+         // Dec, Jan, Feb, Mar (WINTER)
+         seasonMultiplier = 1.25; 
+         seasonName = 'Winter (Snow Season)';
+      } else if (month === 9 || month === 10) {
+         // Oct, Nov (AUTUMN)
+         seasonMultiplier = 1.1;
+         seasonName = 'Autumn (Saffron Season)';
+      } else {
+         // July, Aug, Sep (MONSOON/OFF)
+         seasonMultiplier = 0.9;
+         seasonName = 'Off-Peak Season';
+      }
+      setDetectedSeason(seasonName);
+
+      // 2. SMART VEHICLE SELECTION
       let selectedVehicle = 'Sedan';
       let vehicleCost = 3000;
-      let vehiclesNeeded = 1;
-
+      
       if (travelers <= 3) {
         selectedVehicle = 'Sedan (Etios/Dzire)';
         vehicleCost = 3000;
       } else if (travelers <= 6) {
-        selectedVehicle = 'Innova SUV';
-        vehicleCost = 5000;
+        selectedVehicle = 'Innova Crysta';
+        vehicleCost = 5500;
       } else if (travelers <= 12) {
-        selectedVehicle = 'Tempo Traveller';
-        vehicleCost = 8000;
+        selectedVehicle = 'Tempo Traveller (12S)';
+        vehicleCost = 8500;
       } else {
-        selectedVehicle = '2x Tempo Travellers';
-        vehicleCost = 16000;
+        selectedVehicle = 'Tempo Traveller (17S)';
+        vehicleCost = 11000;
       }
       setVehicle(selectedVehicle);
 
-      // 2. SMART HOTEL RATES (Based on Budget Level)
+      // 3. SMART ROUTE GENERATOR
+      // Logic: Add destinations based on Days + Vibe
+      let route = ["Srinagar"];
+      
+      if (days >= 4) route.push("Gulmarg");
+      if (days >= 5) route.push("Pahalgam");
+      
+      // LOGIC: Sonamarg is great for Adventure or Long trips
+      if (days >= 6 || (days >= 5 && vibe === 'adventure')) {
+         route.push("Sonamarg");
+      }
+
+      // LOGIC: Doodhpathri/Yusmarg for very long trips
+      if (days >= 7) route.push("Doodhpathri");
+      if (days >= 8 && vibe === 'adventure') route.push("Yusmarg");
+
+      // Logic: If Flight is late, maybe Houseboat first? (Keep simple for now)
+      setSuggestedRoute(route);
+
+      // 4. PRICING MATH
       const hotelRates = {
         standard: { min: 2500, max: 3500 },
-        deluxe: { min: 5000, max: 7000 },
-        luxury: { min: 12000, max: 25000 }
+        deluxe: { min: 4500, max: 6500 },
+        luxury: { min: 12000, max: 22000 }
       };
-
-      // *AI ADJUSTMENT*: If Honeymoon, force at least Deluxe pricing logic implicitly
-      let activeBudget = budgetLevel;
-      if (vibe === 'honeymoon' && budgetLevel === 'standard') {
-         // We don't change the UI, but we price slightly higher for "Honeymoon Inclusions" (Cake, Decor)
-         // or we could auto-upgrade. Let's strictly respect user choice but add a 'Romantic Addon' cost.
-      }
 
       const rooms = Math.ceil(travelers / 2);
       const nights = Math.max(1, days - 1);
 
-      // 3. GENERATE ITINERARY ROUTE
-      let route = "Srinagar Local";
-      if (days >= 4) route += " ➝ Gulmarg";
-      if (days >= 5) route += " ➝ Pahalgam";
-      if (days >= 7 && vibe === 'adventure') route += " ➝ Sonamarg ➝ Doodhpathri";
-      else if (days >= 7) route += " ➝ Sonamarg";
-      
-      setSuggestedRoute(route);
-
-      // 4. CALCULATE TOTAL (With Season Multiplier)
       const baseTransport = vehicleCost * days;
-      const baseHotelMin = hotelRates[activeBudget].min * rooms * nights;
-      const baseHotelMax = hotelRates[activeBudget].max * rooms * nights;
+      const baseHotelMin = hotelRates[budgetLevel].min * rooms * nights;
+      const baseHotelMax = hotelRates[budgetLevel].max * rooms * nights;
 
-      // Apply Season Multiplier
-      const totalMin = Math.round((baseTransport + baseHotelMin) * multiplier);
-      const totalMax = Math.round((baseTransport + baseHotelMax) * multiplier);
+      // Apply the Season Multiplier we calculated above!
+      const totalMin = Math.round((baseTransport + baseHotelMin) * seasonMultiplier);
+      const totalMax = Math.round((baseTransport + baseHotelMax) * seasonMultiplier);
 
       setQuote({
         min: totalMin,
@@ -114,7 +137,6 @@ export default function SmartBuilder() {
     }, 2000);
   };
 
-  // --- RENDER HELPERS ---
   const formatPrice = (p: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
 
   return (
@@ -127,10 +149,10 @@ export default function SmartBuilder() {
              <Sparkles size={14} /> AI Trip Builder
           </div>
           <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#1E3A8A]">
-            {step === 3 ? "Your Dream Blueprint" : "Build Your Kashmir Trip"}
+            {step === 3 ? "Your Custom Itinerary" : "Build Your Kashmir Trip"}
           </h1>
           <p className="text-gray-500 mt-2">
-            {step === 1 ? "Start by choosing your travel style." : step === 2 ? "Tell us a bit more about the group." : "Here is what we recommend based on your inputs."}
+            {step === 1 ? "Start by choosing your travel style." : step === 2 ? "Tell us a bit more about the group." : "We crafted this based on your dates & preferences."}
           </p>
         </div>
 
@@ -198,6 +220,7 @@ export default function SmartBuilder() {
                      type="date" min={minDate} value={startDate} onChange={(e) => setStartDate(e.target.value)}
                      className="w-full p-3 border rounded-xl font-bold text-gray-700 focus:border-[#D97706] outline-none"
                    />
+                   <p className="text-xs text-gray-400 mt-2">Prices adjust automatically based on season.</p>
                 </div>
                 {/* Budget */}
                 <div>
@@ -231,8 +254,8 @@ export default function SmartBuilder() {
         {loading && (
            <div className="text-center py-20 animate-pulse">
               <RefreshCw className="animate-spin text-[#D97706] mx-auto mb-6" size={64} />
-              <h3 className="text-2xl font-bold text-[#1E3A8A] mb-2">Building your {vibe} Trip...</h3>
-              <p className="text-gray-500">Checking {season} rates for {travelers} people...</p>
+              <h3 className="text-2xl font-bold text-[#1E3A8A] mb-2">Checking Hotel Rates...</h3>
+              <p className="text-gray-500">Calculating vehicle costs for {travelers} people...</p>
            </div>
         )}
 
@@ -245,12 +268,12 @@ export default function SmartBuilder() {
                  <div className="lg:col-span-2 bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
                     <div className="bg-[#1E3A8A] p-6 text-white flex justify-between items-center">
                        <div>
-                          <p className="text-blue-200 text-xs font-bold uppercase tracking-wider">Recommended For You</p>
+                          <p className="text-blue-200 text-xs font-bold uppercase tracking-wider">Proposal For {travelers} Guests</p>
                           <h2 className="text-2xl font-serif font-bold">The {vibe === 'honeymoon' ? 'Romantic' : vibe === 'adventure' ? 'Explorer' : 'Classic'} Kashmir Route</h2>
                        </div>
                        <div className="text-right">
                           <p className="text-3xl font-bold">{days} Days</p>
-                          <p className="text-blue-200 text-sm">{season} Season</p>
+                          <p className="text-blue-200 text-xs font-bold uppercase tracking-wide">{detectedSeason}</p>
                        </div>
                     </div>
                     
@@ -258,12 +281,12 @@ export default function SmartBuilder() {
                        {/* Smart Route Display */}
                        <div>
                           <h4 className="font-bold text-gray-500 text-sm uppercase mb-3 flex items-center gap-2">
-                             <MapPin size={16} /> Suggested Route
+                             <MapPin size={16} /> Optimized Route
                           </h4>
                           <div className="flex flex-wrap gap-2">
-                             {suggestedRoute.split('➝').map((stop, i) => (
+                             {suggestedRoute.map((stop, i) => (
                                 <span key={i} className="bg-blue-50 text-[#1E3A8A] px-3 py-1 rounded-lg font-bold text-sm flex items-center">
-                                   {stop.trim()} {i < suggestedRoute.split('➝').length - 1 && <ArrowRight size={14} className="ml-2 text-gray-400" />}
+                                   {stop} {i < suggestedRoute.length - 1 && <ArrowRight size={14} className="ml-2 text-gray-400" />}
                                 </span>
                              ))}
                           </div>
@@ -273,23 +296,28 @@ export default function SmartBuilder() {
                        <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-xl border border-orange-100">
                           <div className="p-2 bg-white rounded-full text-[#D97706] shadow-sm"><Car size={20} /></div>
                           <div>
-                             <h4 className="font-bold text-[#1E3A8A]">Transport Selected: {vehicle}</h4>
+                             <h4 className="font-bold text-[#1E3A8A]">Transport: {vehicle}</h4>
                              <p className="text-sm text-gray-600">
-                                Based on your group size of {travelers}, we selected {vehicle} for maximum comfort on mountain roads.
+                                Perfect for mountain roads. Includes fuel, driver, toll, and parking charges.
                              </p>
                           </div>
                        </div>
 
                        {/* Inclusions based on Vibe */}
                        <div>
-                          <h4 className="font-bold text-gray-500 text-sm uppercase mb-3">AI Selected Inclusions</h4>
+                          <h4 className="font-bold text-gray-500 text-sm uppercase mb-3">Included in Package</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> Accommodation ({budgetLevel})</div>
                              <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> Breakfast & Dinner</div>
-                             <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> Tolls, Parking & Driver Allowances</div>
                              <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> 1 Hour Shikara Ride</div>
-                             {vibe === 'honeymoon' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Honeymoon Cake & Decor</div>}
-                             {vibe === 'adventure' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Day Trek Guide at Pahalgam</div>}
-                             {vibe === 'winter' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Snow Chains for Vehicle</div>}
+                             
+                             {/* Dynamic Inclusions */}
+                             {vibe === 'honeymoon' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Candlelight Dinner</div>}
+                             {vibe === 'adventure' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Pony Ride Assistance</div>}
+                             {vibe === 'winter' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Heating in Rooms</div>}
+                             
+                             {/* Route Specific Inclusions */}
+                             {suggestedRoute.includes('Sonamarg') && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-blue-500" /> Thajiwas Glacier Point</div>}
                           </div>
                        </div>
                     </div>
@@ -298,8 +326,13 @@ export default function SmartBuilder() {
                  {/* Right: The Quote Card */}
                  <div className="lg:col-span-1">
                     <div className="bg-white rounded-3xl shadow-xl p-8 border-t-8 border-[#D97706] sticky top-28">
-                       <p className="text-gray-500 font-bold text-sm uppercase mb-1">Estimated Trip Cost</p>
-                       <h3 className="text-4xl font-bold text-[#1E3A8A] mb-2">{formatPrice(quote.min)} - {formatPrice(quote.max)}</h3>
+                       <div className="flex items-center gap-2 mb-2">
+                          <CalendarDays size={16} className="text-[#D97706]" />
+                          <p className="text-xs font-bold text-gray-500 uppercase">{new Date(startDate).toDateString()}</p>
+                       </div>
+                       
+                       <p className="text-gray-400 text-xs font-bold uppercase mb-1">Total Estimated Cost</p>
+                       <h3 className="text-3xl font-bold text-[#1E3A8A] mb-2">{formatPrice(quote.min)} - {formatPrice(quote.max)}</h3>
                        <p className="text-sm text-green-600 font-bold bg-green-50 inline-block px-2 py-1 rounded-md mb-6">
                           ~ {formatPrice(quote.perPerson)} per person
                        </p>
@@ -323,7 +356,7 @@ export default function SmartBuilder() {
                        </div>
 
                        <div className="text-[10px] text-gray-400 text-center leading-relaxed">
-                          *Final price may vary slightly based on exact hotel availability at the time of booking.
+                          *Rate applied for <strong>{detectedSeason}</strong>. Final price subject to hotel availability.
                        </div>
                     </div>
                  </div>
