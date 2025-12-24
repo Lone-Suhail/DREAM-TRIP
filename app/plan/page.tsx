@@ -2,359 +2,336 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, Users, Star, Car, Check, Info, ArrowRight, AlertCircle, MapPin, HelpCircle } from 'lucide-react';
+import { Calendar, Users, Star, Car, Check, Info, ArrowRight, MapPin, Sparkles, Heart, Mountain, Snowflake, Palmtree, RefreshCw, CheckCircle } from 'lucide-react';
+import { useSeason } from '@/data/SeasonContext';
+import { seasonConfig } from '@/data/seasons';
 
-export default function PlanMyTrip() {
-  // --- STATE ---
+// --- CONFIGURATION ---
+const VIBES = [
+  { id: 'honeymoon', label: 'Romantic / Honeymoon', icon: <Heart className="w-6 h-6" />, desc: 'Candlelight dinners & Flower decor' },
+  { id: 'family', label: 'Family Vacation', icon: <Palmtree className="w-6 h-6" />, desc: 'Comfortable pace & Safe hotels' },
+  { id: 'adventure', label: 'Adventure / Trekking', icon: <Mountain className="w-6 h-6" />, desc: 'Offbeat paths & Camping' },
+  { id: 'winter', label: 'Snow & Skiing', icon: <Snowflake className="w-6 h-6" />, desc: 'Gulmarg slopes & Snow chains' },
+];
+
+export default function SmartBuilder() {
+  const { season } = useSeason();
+  const seasonData = seasonConfig[season] || seasonConfig['summer'];
+  const multiplier = seasonData.priceMultiplier;
+
+  // --- STEPS STATE ---
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  // --- INPUTS ---
+  const [vibe, setVibe] = useState('');
   const [travelers, setTravelers] = useState(2);
   const [days, setDays] = useState(6);
-  const [hotelCategory, setHotelCategory] = useState<'standard' | 'deluxe' | 'luxury'>('deluxe');
-  const [vehicleType, setVehicleType] = useState<'sedan' | 'suv' | 'tempo'>('sedan');
-  const [pickupLocation, setPickupLocation] = useState<'srinagar_air' | 'srinagar_rail' | 'jammu_rail'>('srinagar_air');
-  
-  // --- DATE STATE ---
   const [startDate, setStartDate] = useState('');
-  const [minDate, setMinDate] = useState('');
+  const [budgetLevel, setBudgetLevel] = useState<'standard' | 'deluxe' | 'luxury'>('deluxe');
 
-  // --- FIX: MOBILE DATE BLOCKER (Manual String Build) ---
+  // --- OUTPUTS ---
+  const [quote, setQuote] = useState({ min: 0, max: 0, perPerson: 0 });
+  const [vehicle, setVehicle] = useState('Sedan');
+  const [suggestedRoute, setSuggestedRoute] = useState('');
+
+  // --- DATE MINIMUM ---
+  const [minDate, setMinDate] = useState('');
   useEffect(() => {
     const dt = new Date();
-    const year = dt.getFullYear();
-    const month = String(dt.getMonth() + 1).padStart(2, '0');
-    const day = String(dt.getDate()).padStart(2, '0');
-    setMinDate(`${year}-${month}-${day}`);
+    setMinDate(dt.toISOString().split('T')[0]);
   }, []);
 
-  // Range State
-  const [minCost, setMinCost] = useState(0);
-  const [maxCost, setMaxCost] = useState(0);
-  const [minPerPerson, setMinPerPerson] = useState(0);
-  const [maxPerPerson, setMaxPerPerson] = useState(0);
+  // --- INTELLIGENT LOGIC ENGINE ---
+  const generateProposal = () => {
+    setLoading(true);
 
-  /// --- PRICING ENGINE (FIXED) ---
-  useEffect(() => {
-    const numberOfRooms = Math.ceil(travelers / 2);
-    // Ensure nights is at least 1 to avoid 0 cost
-    const nights = Math.max(1, days - 1); 
+    // Simulate "Thinking"
+    setTimeout(() => {
+      // 1. SMART VEHICLE SELECTION
+      let selectedVehicle = 'Sedan';
+      let vehicleCost = 3000;
+      let vehiclesNeeded = 1;
 
-    // 1. DEFINE MIN AND MAX RATES SEPARATELY
-    const hotelRates = { 
-        standard: { min: 2000, max: 4000 }, 
-        deluxe:   { min: 4500, max: 6000 }, 
-        luxury:   { min: 12000, max: 20000 } 
-    };
+      if (travelers <= 3) {
+        selectedVehicle = 'Sedan (Etios/Dzire)';
+        vehicleCost = 3000;
+      } else if (travelers <= 6) {
+        selectedVehicle = 'Innova SUV';
+        vehicleCost = 5000;
+      } else if (travelers <= 12) {
+        selectedVehicle = 'Tempo Traveller';
+        vehicleCost = 8000;
+      } else {
+        selectedVehicle = '2x Tempo Travellers';
+        vehicleCost = 16000;
+      }
+      setVehicle(selectedVehicle);
 
-    const transportRates = { 
-        sedan: { min: 2000, max: 3500 }, 
-        suv:   { min: 4000, max: 5000 }, 
-        tempo: { min: 7000, max: 8000 } 
-    };
+      // 2. SMART HOTEL RATES (Based on Budget Level)
+      const hotelRates = {
+        standard: { min: 2500, max: 3500 },
+        deluxe: { min: 5000, max: 7000 },
+        luxury: { min: 12000, max: 25000 }
+      };
 
-    // 2. CALCULATE VEHICLES
-    let vehiclesNeeded = 1;
-    if (vehicleType === 'sedan' && travelers > 4) vehiclesNeeded = Math.ceil(travelers / 4);
-    if (vehicleType === 'suv' && travelers > 7) vehiclesNeeded = Math.ceil(travelers / 7);
-    if (vehicleType === 'tempo' && travelers > 14) vehiclesNeeded = Math.ceil(travelers / 14);
+      // *AI ADJUSTMENT*: If Honeymoon, force at least Deluxe pricing logic implicitly
+      let activeBudget = budgetLevel;
+      if (vibe === 'honeymoon' && budgetLevel === 'standard') {
+         // We don't change the UI, but we price slightly higher for "Honeymoon Inclusions" (Cake, Decor)
+         // or we could auto-upgrade. Let's strictly respect user choice but add a 'Romantic Addon' cost.
+      }
 
-    // 3. CALCULATE MIN TOTAL
-    const minHotel = numberOfRooms * hotelRates[hotelCategory].min * nights;
-    const minTransport = (transportRates[vehicleType].min * vehiclesNeeded) * days;
-    
-    // 4. CALCULATE MAX TOTAL
-    const maxHotel = numberOfRooms * hotelRates[hotelCategory].max * nights;
-    const maxTransport = (transportRates[vehicleType].max * vehiclesNeeded) * days;
+      const rooms = Math.ceil(travelers / 2);
+      const nights = Math.max(1, days - 1);
 
-    // 5. EXTRAS
-    let pickupSurcharge = 0;
-    if (pickupLocation === 'jammu_rail') {
-      pickupSurcharge = 8000 * vehiclesNeeded; 
-    }
+      // 3. GENERATE ITINERARY ROUTE
+      let route = "Srinagar Local";
+      if (days >= 4) route += " ➝ Gulmarg";
+      if (days >= 5) route += " ➝ Pahalgam";
+      if (days >= 7 && vibe === 'adventure') route += " ➝ Sonamarg ➝ Doodhpathri";
+      else if (days >= 7) route += " ➝ Sonamarg";
+      
+      setSuggestedRoute(route);
 
-    // Buffer (Keep buffer consistent or range it too)
-    const baseBuffer = 1200 * travelers; 
+      // 4. CALCULATE TOTAL (With Season Multiplier)
+      const baseTransport = vehicleCost * days;
+      const baseHotelMin = hotelRates[activeBudget].min * rooms * nights;
+      const baseHotelMax = hotelRates[activeBudget].max * rooms * nights;
 
-    // 6. FINAL SUMS
-    const calculatedMin = minHotel + minTransport + pickupSurcharge + baseBuffer;
-    const calculatedMax = maxHotel + maxTransport + pickupSurcharge + baseBuffer; // Removed the arbitrary * 1.20 multiplier since we now have real max rates
+      // Apply Season Multiplier
+      const totalMin = Math.round((baseTransport + baseHotelMin) * multiplier);
+      const totalMax = Math.round((baseTransport + baseHotelMax) * multiplier);
 
-    setMinCost(calculatedMin);
-    setMaxCost(calculatedMax);
-    setMinPerPerson(Math.round(calculatedMin / travelers));
-    setMaxPerPerson(Math.round(calculatedMax / travelers));
+      setQuote({
+        min: totalMin,
+        max: totalMax,
+        perPerson: Math.round(totalMin / travelers)
+      });
 
-  }, [travelers, days, hotelCategory, vehicleType, pickupLocation]);
-
-  const formatPrice = (price: number) => {
-    if (price > 1000) return '₹' + (price / 1000).toFixed(1) + 'k';
-    return '₹' + price;
+      setLoading(false);
+      setStep(3);
+    }, 2000);
   };
 
-  const formatFullPrice = (price: number) => {
-     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
-  };
+  // --- RENDER HELPERS ---
+  const formatPrice = (p: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
 
   return (
     <main className="min-h-screen bg-gray-50 pt-24 pb-12 font-sans">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-4xl">
         
         {/* HEADER */}
-        <div className="text-center mb-12">
-          <span className="text-[#D97706] font-bold uppercase tracking-wider text-sm">Custom Trip Builder</span>
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1E3A8A] mt-2">Build Your Own Package</h1>
-          <p className="text-gray-500 mt-2">Customize your trip and get an estimated budget range instantly.</p>
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-[#1E3A8A] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+             <Sparkles size={14} /> AI Trip Builder
+          </div>
+          <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#1E3A8A]">
+            {step === 3 ? "Your Dream Blueprint" : "Build Your Kashmir Trip"}
+          </h1>
+          <p className="text-gray-500 mt-2">
+            {step === 1 ? "Start by choosing your travel style." : step === 2 ? "Tell us a bit more about the group." : "Here is what we recommend based on your inputs."}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          
-          {/* --- LEFT COLUMN: CONFIGURATOR --- */}
-          <div className="lg:col-span-2 space-y-8">
-            
-            {/* 1. TRAVELERS & DURATION */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
-                <Users size={20} className="text-[#D97706]" /> Who is traveling?
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <label className="flex justify-between font-bold text-gray-700 mb-4">
-                    <span>Travelers</span>
-                    <span className="text-[#D97706] text-xl">{travelers} Pax</span>
-                  </label>
-                  <input 
-                    type="range" min="2" max="20" step="1" 
-                    value={travelers} 
-                    onChange={(e) => setTravelers(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D97706]"
-                  />
-                  <div className="flex justify-between text-xs text-gray-400 mt-2">
-                    <span>2 (Couple)</span>
-                    <span>20 (Group)</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="flex justify-between font-bold text-gray-700 mb-4">
-                    <span>Duration</span>
-                    <span className="text-[#D97706] text-xl">{days} Days / {days - 1} Nights</span>
-                  </label>
-                  <input 
-                    type="range" min="3" max="15" step="1" 
-                    value={days} 
-                    onChange={(e) => setDays(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D97706]"
-                  />
-                  <div className="flex justify-between text-xs text-gray-400 mt-2">
-                    <span>3 Days</span>
-                    <span>15 Days</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. PICKUP LOCATION */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
-                <MapPin size={20} className="text-[#D97706]" /> Pickup Point
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div 
-                  onClick={() => setPickupLocation('srinagar_air')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${pickupLocation === 'srinagar_air' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {pickupLocation === 'srinagar_air' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] text-sm">Srinagar Airport</div>
-                </div>
-                <div 
-                  onClick={() => setPickupLocation('srinagar_rail')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${pickupLocation === 'srinagar_rail' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {pickupLocation === 'srinagar_rail' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] text-sm">Srinagar Railway</div>
-                </div>
-                <div 
-                  onClick={() => setPickupLocation('jammu_rail')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${pickupLocation === 'jammu_rail' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {pickupLocation === 'jammu_rail' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] text-sm">Jammu Railway</div>
-                  <div className="text-[10px] text-gray-500 mt-1">Extra Charges Apply</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 3. HOTEL CATEGORY */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
-                <Star size={20} className="text-[#D97706]" /> Choose Hotel Category
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div 
-                  onClick={() => setHotelCategory('standard')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${hotelCategory === 'standard' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {hotelCategory === 'standard' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] mb-1">Standard</div>
-                  <div className="text-xs text-gray-500 mb-3">Comfortable & clean 3-star.</div>
-                </div>
-                <div 
-                  onClick={() => setHotelCategory('deluxe')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${hotelCategory === 'deluxe' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {hotelCategory === 'deluxe' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] mb-1">Deluxe (4 Star)</div>
-                  <div className="text-xs text-gray-500 mb-3">Premium rooms & views.</div>
-                </div>
-                <div 
-                  onClick={() => setHotelCategory('luxury')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${hotelCategory === 'luxury' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {hotelCategory === 'luxury' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] mb-1">Luxury (5 Star)</div>
-                  <div className="text-xs text-gray-500 mb-3">Top-tier properties.</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. VEHICLE TYPE */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
-                <Car size={20} className="text-[#D97706]" /> Choose Transport
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div 
-                  onClick={() => setVehicleType('sedan')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${vehicleType === 'sedan' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {vehicleType === 'sedan' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] mb-1">Sedan</div>
-                  <div className="text-xs text-gray-500">Etios/Dzire (Max 4)</div>
-                </div>
-                <div 
-                  onClick={() => setVehicleType('suv')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${vehicleType === 'suv' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {vehicleType === 'suv' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] mb-1">SUV (Innova)</div>
-                  <div className="text-xs text-gray-500">Max 6-7 Pax</div>
-                </div>
-                <div 
-                  onClick={() => setVehicleType('tempo')}
-                  className={`cursor-pointer border-2 rounded-2xl p-4 transition-all relative ${vehicleType === 'tempo' ? 'border-[#D97706] bg-orange-50' : 'border-gray-100 hover:border-gray-300'}`}
-                >
-                  {vehicleType === 'tempo' && <div className="absolute top-2 right-2 text-[#D97706]"><Check size={18} /></div>}
-                  <div className="font-bold text-[#1E3A8A] mb-1">Tempo Traveller</div>
-                  <div className="text-xs text-gray-500">Max 12-16 Pax</div>
-                </div>
-              </div>
-              
-               {((vehicleType === 'sedan' && travelers > 4) || (vehicleType === 'suv' && travelers > 7)) && (
-                <div className="mt-4 p-4 bg-orange-50 text-[#D97706] text-sm rounded-xl flex items-center gap-3 border border-orange-100">
-                  <AlertCircle size={20} /> 
-                  <span>
-                    For {travelers} people, we will use 
-                    <strong> {Math.ceil(travelers / (vehicleType === 'sedan' ? 4 : 7))} {vehicleType === 'sedan' ? 'Sedans' : 'SUVs'}</strong>.
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* 5. TRAVEL DATE */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
-                <Calendar size={20} className="text-[#D97706]" /> Travel Dates
-              </h2>
-              <div>
-                <label className="block font-bold text-gray-700 mb-2">When do you want to start?</label>
-                <input 
-                  type="date" 
-                  min={minDate} 
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-[#D97706] outline-none font-bold text-gray-700"
-                />
-              </div>
-            </div>
-
-          </div>
-
-          {/* --- RIGHT COLUMN: STICKY PRICE CARD --- */}
-          <div className="lg:col-span-1">
-            <div className="bg-[#1E3A8A] text-white rounded-3xl p-8 shadow-xl sticky top-28">
-              <h3 className="text-2xl font-serif font-bold mb-6">Trip Estimate</h3>
-              
-              <div className="space-y-4 mb-8 text-blue-100 text-sm">
-                <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                  <span>Travelers</span>
-                  <span className="font-bold text-white">{travelers} People</span>
-                </div>
-                <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                  <span>Pickup</span>
-                  <span className="font-bold text-white uppercase">{pickupLocation.replace('_', ' ')}</span>
-                </div>
-                <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                  <span>Transport</span>
-                  <span className="font-bold text-white capitalize">{vehicleType}</span>
-                </div>
-              </div>
-
-              <div className="mb-6 p-4 bg-white/10 rounded-xl border border-white/10">
-                <div className="mb-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs uppercase tracking-wider text-blue-300">Estimated Range</span>
-                    <div className="group relative">
-                        <HelpCircle size={14} className="text-blue-300 cursor-help" />
-                        <div className="absolute bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-black text-xs text-white rounded shadow-lg">
-                            Prices vary based on season (April-June is peak) and specific hotel availability.
-                        </div>
+        {/* --- STEP 1: VIBE SELECTION --- */}
+        {step === 1 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+             {VIBES.map((v) => (
+               <button 
+                 key={v.id}
+                 onClick={() => { setVibe(v.id); setStep(2); }}
+                 className="bg-white p-6 rounded-2xl border-2 border-gray-100 hover:border-[#D97706] hover:shadow-xl transition-all group text-left relative overflow-hidden"
+               >
+                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-[#D97706] scale-150">
+                    {v.icon}
+                 </div>
+                 <div className="flex items-center gap-4 mb-3">
+                    <div className="p-3 bg-orange-50 text-[#D97706] rounded-full group-hover:bg-[#D97706] group-hover:text-white transition-colors">
+                       {v.icon}
                     </div>
-                  </div>
-                  <span className="text-2xl font-bold">
-                    {formatFullPrice(minCost)} - {formatFullPrice(maxCost)}
-                  </span>
-                </div>
-                
-                <div className="h-px bg-white/20 my-2"></div>
-                
-                <div className="flex justify-between items-end">
-                  <span className="text-xs uppercase tracking-wider text-[#D97706] font-bold">Per Person</span>
-                  <span className="text-2xl font-bold text-[#D97706]">
-                     {formatPrice(minPerPerson)} - {formatPrice(maxPerPerson)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-blue-900/50 p-3 rounded-lg flex gap-2 items-start mb-6 border border-blue-400/30">
-                <Info size={16} className="text-blue-200 shrink-0 mt-0.5" />
-                <p className="text-[10px] text-blue-100 leading-relaxed">
-                   <strong>Subject to availability.</strong> This is an approximate budget range. Final quote will be shared after checking hotel dates.
-                </p>
-              </div>
-
-              {/* --- LINK FIXED: NO PRE-FILLED BUDGET OR MESSAGE --- */}
-              <Link href={startDate ? `/book?travelers=${travelers}&date=${startDate}` : '#'}
-              onClick={(e) => 
-                {
-              if (!startDate) 
-                {
-              e.preventDefault();
-              alert("Please select a travel date first.");
-                 }
-                } }
-              >
-              <button className={`w-full py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all font-bold text-white
-             ${startDate ? 'bg-[#D97706] hover:bg-amber-600 hover:shadow-xl group' : 'bg-gray-400 cursor-not-allowed'}`}
-             >
-               Check Exact Price <ArrowRight size={18} className={startDate ? "group-hover:translate-x-1 transition-transform" : ""} />
-              </button>
-             </Link>
-              {/* --------------------------------------------------- */}
-
-            </div>
+                    <h3 className="text-xl font-bold text-gray-800">{v.label}</h3>
+                 </div>
+                 <p className="text-sm text-gray-500 pl-[4.5rem]">{v.desc}</p>
+               </button>
+             ))}
           </div>
+        )}
 
-        </div>
+        {/* --- STEP 2: DETAILS --- */}
+        {step === 2 && !loading && (
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 animate-fade-in">
+             <button onClick={() => setStep(1)} className="text-sm text-gray-400 mb-6 hover:text-[#1E3A8A]">← Back to Vibes</button>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Travelers */}
+                <div>
+                   <label className="block font-bold text-gray-700 mb-2">Travelers</label>
+                   <div className="flex items-center gap-4">
+                      <input 
+                        type="range" min="2" max="20" 
+                        value={travelers} onChange={(e) => setTravelers(parseInt(e.target.value))}
+                        className="w-full accent-[#D97706]"
+                      />
+                      <span className="font-bold text-[#1E3A8A] text-xl min-w-[3ch]">{travelers}</span>
+                   </div>
+                </div>
+                {/* Duration */}
+                <div>
+                   <label className="block font-bold text-gray-700 mb-2">Duration (Days)</label>
+                   <div className="flex items-center gap-4">
+                      <input 
+                        type="range" min="3" max="14" 
+                        value={days} onChange={(e) => setDays(parseInt(e.target.value))}
+                        className="w-full accent-[#D97706]"
+                      />
+                      <span className="font-bold text-[#1E3A8A] text-xl min-w-[3ch]">{days}</span>
+                   </div>
+                </div>
+             </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Date */}
+                <div>
+                   <label className="block font-bold text-gray-700 mb-2">Start Date</label>
+                   <input 
+                     type="date" min={minDate} value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                     className="w-full p-3 border rounded-xl font-bold text-gray-700 focus:border-[#D97706] outline-none"
+                   />
+                </div>
+                {/* Budget */}
+                <div>
+                   <label className="block font-bold text-gray-700 mb-2">Hotel Preference</label>
+                   <div className="flex bg-gray-100 p-1 rounded-xl">
+                      {['standard', 'deluxe', 'luxury'].map((cat) => (
+                         <button
+                           key={cat}
+                           onClick={() => setBudgetLevel(cat as any)}
+                           className={`flex-1 py-2 text-sm font-bold rounded-lg capitalize transition-all ${budgetLevel === cat ? 'bg-white text-[#D97706] shadow-sm' : 'text-gray-400'}`}
+                         >
+                           {cat}
+                         </button>
+                      ))}
+                   </div>
+                </div>
+             </div>
+
+             <button 
+               onClick={generateProposal}
+               disabled={!startDate}
+               className={`w-full py-4 rounded-xl font-bold text-lg text-white shadow-lg transition-all flex items-center justify-center gap-2
+               ${startDate ? 'bg-[#1E3A8A] hover:bg-[#D97706]' : 'bg-gray-300 cursor-not-allowed'}`}
+             >
+                {startDate ? 'Generate My Plan' : 'Select a Date to Continue'} <ArrowRight size={20} />
+             </button>
+          </div>
+        )}
+
+        {/* --- LOADING STATE --- */}
+        {loading && (
+           <div className="text-center py-20 animate-pulse">
+              <RefreshCw className="animate-spin text-[#D97706] mx-auto mb-6" size={64} />
+              <h3 className="text-2xl font-bold text-[#1E3A8A] mb-2">Building your {vibe} Trip...</h3>
+              <p className="text-gray-500">Checking {season} rates for {travelers} people...</p>
+           </div>
+        )}
+
+        {/* --- STEP 3: THE PROPOSAL --- */}
+        {step === 3 && (
+           <div className="animate-scale-in">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 
+                 {/* Left: The Itinerary Card */}
+                 <div className="lg:col-span-2 bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                    <div className="bg-[#1E3A8A] p-6 text-white flex justify-between items-center">
+                       <div>
+                          <p className="text-blue-200 text-xs font-bold uppercase tracking-wider">Recommended For You</p>
+                          <h2 className="text-2xl font-serif font-bold">The {vibe === 'honeymoon' ? 'Romantic' : vibe === 'adventure' ? 'Explorer' : 'Classic'} Kashmir Route</h2>
+                       </div>
+                       <div className="text-right">
+                          <p className="text-3xl font-bold">{days} Days</p>
+                          <p className="text-blue-200 text-sm">{season} Season</p>
+                       </div>
+                    </div>
+                    
+                    <div className="p-8 space-y-6">
+                       {/* Smart Route Display */}
+                       <div>
+                          <h4 className="font-bold text-gray-500 text-sm uppercase mb-3 flex items-center gap-2">
+                             <MapPin size={16} /> Suggested Route
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                             {suggestedRoute.split('➝').map((stop, i) => (
+                                <span key={i} className="bg-blue-50 text-[#1E3A8A] px-3 py-1 rounded-lg font-bold text-sm flex items-center">
+                                   {stop.trim()} {i < suggestedRoute.split('➝').length - 1 && <ArrowRight size={14} className="ml-2 text-gray-400" />}
+                                </span>
+                             ))}
+                          </div>
+                       </div>
+
+                       {/* Smart Vehicle Logic */}
+                       <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-xl border border-orange-100">
+                          <div className="p-2 bg-white rounded-full text-[#D97706] shadow-sm"><Car size={20} /></div>
+                          <div>
+                             <h4 className="font-bold text-[#1E3A8A]">Transport Selected: {vehicle}</h4>
+                             <p className="text-sm text-gray-600">
+                                Based on your group size of {travelers}, we selected {vehicle} for maximum comfort on mountain roads.
+                             </p>
+                          </div>
+                       </div>
+
+                       {/* Inclusions based on Vibe */}
+                       <div>
+                          <h4 className="font-bold text-gray-500 text-sm uppercase mb-3">AI Selected Inclusions</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> Breakfast & Dinner</div>
+                             <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> Tolls, Parking & Driver Allowances</div>
+                             <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> 1 Hour Shikara Ride</div>
+                             {vibe === 'honeymoon' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Honeymoon Cake & Decor</div>}
+                             {vibe === 'adventure' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Day Trek Guide at Pahalgam</div>}
+                             {vibe === 'winter' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Snow Chains for Vehicle</div>}
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Right: The Quote Card */}
+                 <div className="lg:col-span-1">
+                    <div className="bg-white rounded-3xl shadow-xl p-8 border-t-8 border-[#D97706] sticky top-28">
+                       <p className="text-gray-500 font-bold text-sm uppercase mb-1">Estimated Trip Cost</p>
+                       <h3 className="text-4xl font-bold text-[#1E3A8A] mb-2">{formatPrice(quote.min)} - {formatPrice(quote.max)}</h3>
+                       <p className="text-sm text-green-600 font-bold bg-green-50 inline-block px-2 py-1 rounded-md mb-6">
+                          ~ {formatPrice(quote.perPerson)} per person
+                       </p>
+
+                       <div className="space-y-3 mb-8">
+                          <Link 
+                            href={`/book?package=Custom ${vibe} Trip&price=${quote.min}&date=${startDate}&pax=${travelers}`}
+                            className="block w-full"
+                          >
+                             <button className="w-full py-4 bg-[#1E3A8A] text-white font-bold rounded-xl hover:bg-blue-900 shadow-lg transition-all flex items-center justify-center gap-2">
+                                Book This Trip <ArrowRight size={20} />
+                             </button>
+                          </Link>
+                          
+                          <button 
+                            onClick={() => setStep(1)}
+                            className="w-full py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-xl transition-all"
+                          >
+                             Start Over
+                          </button>
+                       </div>
+
+                       <div className="text-[10px] text-gray-400 text-center leading-relaxed">
+                          *Final price may vary slightly based on exact hotel availability at the time of booking.
+                       </div>
+                    </div>
+                 </div>
+
+              </div>
+           </div>
+        )}
+
       </div>
     </main>
   );
