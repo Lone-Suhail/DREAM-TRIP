@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Users, Car, Info, ArrowRight, MapPin, Sparkles, Heart, Mountain, Snowflake, Palmtree, RefreshCw, CheckCircle, CalendarDays, AlertTriangle } from 'lucide-react';
+import { Users, Car, Info, ArrowRight, MapPin, Sparkles, Heart, Mountain, Snowflake, Palmtree, RefreshCw, CheckCircle, CalendarDays, AlertTriangle, AlertCircle } from 'lucide-react';
 
 const VIBES = [
   { id: 'honeymoon', label: 'Romantic / Honeymoon', icon: <Heart className="w-6 h-6" />, desc: 'Candlelight dinners & Flower decor' },
@@ -25,7 +25,10 @@ export default function SmartBuilder() {
   const [vehicle, setVehicle] = useState('Sedan');
   const [suggestedRoute, setSuggestedRoute] = useState<string[]>([]);
   const [detectedSeason, setDetectedSeason] = useState('');
-  const [unionCabCost, setUnionCabCost] = useState(0); // Show hidden costs
+  
+  // Smart Warnings
+  const [showUnionWarning, setShowUnionWarning] = useState(false);
+  const [showChainWarning, setShowChainWarning] = useState(false);
 
   const [minDate, setMinDate] = useState('');
   useEffect(() => {
@@ -46,25 +49,25 @@ export default function SmartBuilder() {
       let transportMultiplier = 1.0;
       let seasonName = 'Standard Season';
 
-      // PEAK SUMMER (April, May, June) -> Hotels 2x, Cabs 1.4x
+      // PEAK SUMMER (April, May, June)
       if (month >= 3 && month <= 5) { 
          hotelMultiplier = 1.8; 
          transportMultiplier = 1.3;
          seasonName = 'Peak Summer (High Demand)';
       } 
-      // PEAK WINTER (Dec, Jan) -> Hotels 1.5x (Heating costs), Cabs 1.3x (Risk)
+      // PEAK WINTER (Dec, Jan)
       else if (month === 11 || month === 0) { 
          hotelMultiplier = 1.5; 
          transportMultiplier = 1.3;
          seasonName = 'Peak Winter (New Year/Snow)';
       }
-      // AUTUMN/LATE WINTER (Sept, Oct, Feb, Mar) -> Moderate
+      // AUTUMN/LATE WINTER (Sept, Oct, Feb, Mar)
       else if (month === 8 || month === 9 || month === 1 || month === 2) {
          hotelMultiplier = 1.2;
          transportMultiplier = 1.1;
          seasonName = 'Shoulder Season';
       }
-      // OFF SEASON (July, Aug) -> Cheap
+      // OFF SEASON (July, Aug)
       else {
          hotelMultiplier = 0.9;
          transportMultiplier = 1.0;
@@ -81,7 +84,7 @@ export default function SmartBuilder() {
         dailyTransportRate = 3200;
       } else if (travelers <= 6) {
         selectedVehicle = 'Innova Crysta';
-        dailyTransportRate = 6000; // Increased base rate
+        dailyTransportRate = 6000;
       } else if (travelers <= 12) {
         selectedVehicle = 'Tempo Traveller (12S)';
         dailyTransportRate = 9000;
@@ -91,43 +94,45 @@ export default function SmartBuilder() {
       }
       setVehicle(selectedVehicle);
 
-      // 3. ROUTE GENERATOR & UNION CAB CALCULATION
-      // Union Cabs are mandatory in Pahalgam (Aru/Betaab) & Sonamarg (Thajiwas)
+      // 3. ROUTE GENERATOR & WARNINGS
       let route = ["Srinagar"];
-      let localCabCharges = 0;
+      let needsUnion = false;
+      let needsChains = false;
 
       if (days >= 4) {
          route.push("Gulmarg");
-         // Gulmarg Gondola is extra, but usually no Union Cab needed unless Drung Waterfall
+         // If Winter + Gulmarg = Chain Warning
+         if (seasonName.includes('Winter') || seasonName.includes('Snow')) {
+            needsChains = true;
+         }
       }
       if (days >= 5) {
          route.push("Pahalgam");
-         // Pahalgam Union Cab for Aru/Betaab Valley is mandatory approx 3000-4000 per cab
-         const cabsNeeded = Math.ceil(travelers / 6);
-         localCabCharges += (3500 * cabsNeeded);
+         // Pahalgam ALWAYS needs Union Cab for Aru/Betaab
+         needsUnion = true;
       }
       if (days >= 6 || (days >= 5 && vibe === 'adventure')) {
          route.push("Sonamarg");
-         // Sonamarg Union Cab to Thajiwas Glacier point approx 3000
-         const cabsNeeded = Math.ceil(travelers / 6);
-         localCabCharges += (3000 * cabsNeeded);
+         // Sonamarg also needs Union Cab for Thajiwas
+         needsUnion = true;
       }
 
       setSuggestedRoute(route);
-      setUnionCabCost(localCabCharges);
+      setShowUnionWarning(needsUnion);
+      setShowChainWarning(needsChains);
 
-      // 4. BASE RATES (Increased for Safety)
+      // 4. BASE RATES
       const hotelRates = {
-        standard: { min: 3000, max: 4000 }, // Was 2500
-        deluxe: { min: 5500, max: 7500 },   // Was 4500
-        luxury: { min: 15000, max: 25000 }  // Was 12000
+        standard: { min: 3000, max: 4000 },
+        deluxe: { min: 5500, max: 7500 },
+        luxury: { min: 15000, max: 25000 }
       };
 
       const rooms = Math.ceil(travelers / 2);
       const nights = Math.max(1, days - 1);
 
-      // 5. FINAL MATH
-      const totalTransport = (dailyTransportRate * days * transportMultiplier) + localCabCharges;
+      // 5. FINAL MATH (WITHOUT UNION CABS)
+      const totalTransport = (dailyTransportRate * days * transportMultiplier); // Just your car
       const totalHotelMin = hotelRates[budgetLevel].min * rooms * nights * hotelMultiplier;
       const totalHotelMax = hotelRates[budgetLevel].max * rooms * nights * hotelMultiplier;
 
@@ -160,11 +165,11 @@ export default function SmartBuilder() {
             {step === 3 ? "Your Custom Itinerary" : "Build Your Kashmir Trip"}
           </h1>
           <p className="text-gray-500 mt-2">
-            {step === 1 ? "Start by choosing your travel style." : step === 2 ? "Tell us a bit more about the group." : "Real-time quote with updated season rates."}
+            {step === 1 ? "Start by choosing your travel style." : step === 2 ? "Tell us a bit more about the group." : "Real-time quote based on your dates."}
           </p>
         </div>
 
-        {/* --- STEP 1 & 2 (Identical to previous, keeping for context) --- */}
+        {/* --- STEP 1: VIBE --- */}
         {step === 1 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
              {VIBES.map((v) => (
@@ -185,6 +190,7 @@ export default function SmartBuilder() {
           </div>
         )}
 
+        {/* --- STEP 2: DETAILS --- */}
         {step === 2 && !loading && (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 animate-fade-in">
              <button onClick={() => setStep(1)} className="text-sm text-gray-400 mb-6 hover:text-[#1E3A8A]">← Back to Vibes</button>
@@ -231,7 +237,7 @@ export default function SmartBuilder() {
            <div className="text-center py-20 animate-pulse">
               <RefreshCw className="animate-spin text-[#D97706] mx-auto mb-6" size={64} />
               <h3 className="text-2xl font-bold text-[#1E3A8A] mb-2">Calculating Peak Season Rates...</h3>
-              <p className="text-gray-500">Adding Union Cab charges for Pahalgam & Sonamarg...</p>
+              <p className="text-gray-500">Checking hotel availability for {detectedSeason}...</p>
            </div>
         )}
 
@@ -254,9 +260,28 @@ export default function SmartBuilder() {
                     </div>
                     
                     <div className="p-8 space-y-6">
+                       
+                       {/* IMPORTANT ALERTS */}
+                       {(showUnionWarning || showChainWarning) && (
+                          <div className="bg-orange-50 p-4 rounded-xl border border-orange-200">
+                             <h4 className="text-orange-800 font-bold flex items-center gap-2 mb-2 text-sm">
+                                <AlertTriangle size={16} /> Important Exclusions
+                             </h4>
+                             <ul className="text-xs text-orange-700 space-y-1 list-disc list-inside">
+                                {showUnionWarning && (
+                                   <li><strong>Union Cabs:</strong> For Pahalgam (Aru/Betaab) & Sonamarg (Thajiwas), you must hire local Union cabs directly at the stand.</li>
+                                )}
+                                {showChainWarning && (
+                                   <li><strong>Snow Chains:</strong> If it snows in Gulmarg, only chained jeeps are allowed. You must hire these locally if needed.</li>
+                                )}
+                             </ul>
+                          </div>
+                       )}
+
+                       {/* Route */}
                        <div>
                           <h4 className="font-bold text-gray-500 text-sm uppercase mb-3 flex items-center gap-2">
-                             <MapPin size={16} /> Optimized Route
+                             <MapPin size={16} /> Suggested Route
                           </h4>
                           <div className="flex flex-wrap gap-2">
                              {suggestedRoute.map((stop, i) => (
@@ -267,22 +292,18 @@ export default function SmartBuilder() {
                           </div>
                        </div>
 
-                       <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-xl border border-orange-100">
-                          <div className="p-2 bg-white rounded-full text-[#D97706] shadow-sm"><Car size={20} /></div>
+                       {/* Vehicle */}
+                       <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                          <div className="p-2 bg-white rounded-full text-[#1E3A8A] shadow-sm"><Car size={20} /></div>
                           <div>
                              <h4 className="font-bold text-[#1E3A8A]">Transport: {vehicle}</h4>
                              <p className="text-sm text-gray-600 mb-1">
-                                Includes fuel, driver, toll, and parking.
+                                Includes fuel, driver, toll, and parking. (Srinagar to Srinagar).
                              </p>
-                             {unionCabCost > 0 && (
-                                <div className="flex items-center gap-2 text-xs font-bold text-red-500 mt-2 bg-red-50 p-2 rounded-lg">
-                                    <AlertTriangle size={12} />
-                                    Includes Mandatory Union Cabs for Sightseeing (₹{unionCabCost})
-                                </div>
-                             )}
                           </div>
                        </div>
 
+                       {/* Inclusions */}
                        <div>
                           <h4 className="font-bold text-gray-500 text-sm uppercase mb-3">Included in Package</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -290,7 +311,6 @@ export default function SmartBuilder() {
                              <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> Breakfast & Dinner</div>
                              <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-green-500" /> 1 Hour Shikara Ride</div>
                              {vibe === 'honeymoon' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Candlelight Dinner</div>}
-                             {vibe === 'winter' && <div className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={16} className="text-[#D97706]" /> Heating Included</div>}
                           </div>
                        </div>
                     </div>
@@ -324,7 +344,9 @@ export default function SmartBuilder() {
                        </div>
 
                        <div className="text-[10px] text-gray-400 text-center leading-relaxed">
-                          *Rate applied for <strong>{detectedSeason}</strong>. Includes Union Cab buffers.
+                          <AlertCircle size={12} className="inline mr-1" />
+                          Rate applied for <strong>{detectedSeason}</strong>.<br/>
+                          Does NOT include Union Cabs / Snow Chains.
                        </div>
                     </div>
                  </div>
