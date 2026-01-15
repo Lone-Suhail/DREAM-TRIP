@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { 
@@ -7,7 +9,7 @@ import {
   FaWhatsapp, 
   FaMapPin, 
   FaPhone, 
-  FaEnvelope, // Changed from FaMail (which doesn't exist)
+  FaEnvelope, 
   FaGlobe 
 } from 'react-icons/fa';
 
@@ -90,7 +92,9 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-white/10 pt-8 text-center text-sm text-blue-300">
-          <p>&copy; {new Date().getFullYear()} Dream Trip Kashmir. All rights reserved.</p>
+          <p>
+            &copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> Dream Trip Kashmir. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
